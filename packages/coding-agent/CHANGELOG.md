@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added `excludeFromContext` flag to the `bash` RPC command for parity with the internal `executeBash` API ([#5039](https://github.com/earendil-works/pi/issues/5039)).
+
 ### Fixed
 
 - Fixed user message transcript rendering to preserve user-authored ordered-list markers ([#5013](https://github.com/earendil-works/pi/issues/5013)).
