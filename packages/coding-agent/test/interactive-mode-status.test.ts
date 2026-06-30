@@ -1,6 +1,6 @@
 import { homedir } from "node:os";
 import * as path from "node:path";
-import { type AutocompleteProvider, CombinedAutocompleteProvider } from "@earendil-works/pi-tui";
+import { type AutocompleteProvider, CombinedAutocompleteProvider } from "@southbag/code-tui";
 import { beforeAll, describe, expect, test, vi } from "vitest";
 import { type Component, Container, type Focusable, TUI } from "../../tui/src/tui.ts";
 import { VirtualTerminal } from "../../tui/test/virtual-terminal.ts";
@@ -369,59 +369,6 @@ describe("InteractiveMode.setupAutocompleteProvider", () => {
 
 		const provider = defaultEditor.setAutocompleteProvider.mock.calls[0]?.[0] as AutocompleteProvider;
 		expect(provider.triggerCharacters).toEqual(["$", "!"]);
-	});
-});
-
-describe("InteractiveMode.createBaseAutocompleteProvider", () => {
-	test("matches model command arguments across provider/model order", async () => {
-		type TestModel = { id: string; provider: string; name: string };
-		type FakeInteractiveMode = {
-			session: {
-				scopedModels: Array<{ model: TestModel }>;
-				modelRegistry: { getAvailable: () => TestModel[] };
-				promptTemplates: [];
-				extensionRunner: { getRegisteredCommands: () => [] };
-				resourceLoader: { getSkills: () => { skills: [] } };
-			};
-			settingsManager: { getEnableSkillCommands: () => boolean };
-			skillCommands: Map<string, string>;
-			sessionManager: { getCwd: () => string };
-			fdPath: null;
-		};
-
-		const createBaseAutocompleteProvider = (
-			InteractiveMode as unknown as {
-				prototype: { createBaseAutocompleteProvider(this: FakeInteractiveMode): AutocompleteProvider };
-			}
-		).prototype.createBaseAutocompleteProvider;
-		const models = [
-			{ id: "gpt-5.2-codex", provider: "github-copilot", name: "GPT-5.2 Codex" },
-			{ id: "gpt-5.5", provider: "openai-codex", name: "GPT-5.5" },
-		];
-		const fakeThis: FakeInteractiveMode = {
-			session: {
-				scopedModels: [],
-				modelRegistry: { getAvailable: () => models },
-				promptTemplates: [],
-				extensionRunner: { getRegisteredCommands: () => [] },
-				resourceLoader: { getSkills: () => ({ skills: [] }) },
-			},
-			settingsManager: { getEnableSkillCommands: () => false },
-			skillCommands: new Map(),
-			sessionManager: { getCwd: () => "/tmp" },
-			fdPath: null,
-		};
-
-		const provider = createBaseAutocompleteProvider.call(fakeThis);
-		const line = "/model codexgpt";
-		const suggestions = await provider.getSuggestions([line], 0, line.length, {
-			signal: new AbortController().signal,
-		});
-
-		expect(suggestions?.items.map((item) => item.value)).toEqual([
-			"openai-codex/gpt-5.5",
-			"github-copilot/gpt-5.2-codex",
-		]);
 	});
 });
 

@@ -6,10 +6,10 @@ import { isAbsolute, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const packages = [
-	{ directory: "packages/ai", name: "@earendil-works/pi-ai" },
-	{ directory: "packages/tui", name: "@earendil-works/pi-tui" },
-	{ directory: "packages/agent", name: "@earendil-works/pi-agent-core" },
-	{ directory: "packages/coding-agent", name: "@earendil-works/pi-coding-agent" },
+	{ directory: "packages/ai", name: "@southbag/code-ai" },
+	{ directory: "packages/tui", name: "@southbag/code-tui" },
+	{ directory: "packages/agent", name: "@southbag/code-core" },
+	{ directory: "packages/coding-agent", name: "@southbag/code" },
 ];
 
 function printUsage() {

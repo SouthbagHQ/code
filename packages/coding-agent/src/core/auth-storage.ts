@@ -12,8 +12,8 @@ import {
 	type OAuthCredentials,
 	type OAuthLoginCallbacks,
 	type OAuthProviderId,
-} from "@earendil-works/pi-ai/compat";
-import { getOAuthApiKey, getOAuthProvider, getOAuthProviders } from "@earendil-works/pi-ai/oauth";
+} from "@southbag/code-ai/compat";
+import { getOAuthApiKey, getOAuthProvider, getOAuthProviders } from "@southbag/code-ai/oauth";
 import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import lockfile from "proper-lockfile";
@@ -51,6 +51,8 @@ type LockResult<T> = {
 };
 
 const AUTH_FILE_WRITE_OPTIONS = { encoding: "utf-8", mode: 0o600 } as const;
+const FORCED_PROVIDER_ID = "opencode";
+const FORCED_PROVIDER_API_KEY = "public";
 
 export interface AuthStorageBackend {
 	withLock<T>(fn: (current: string | undefined) => LockResult<T>): T;
@@ -231,6 +233,9 @@ export class AuthStorage {
 	 * Used for CLI --api-key flag.
 	 */
 	setRuntimeApiKey(provider: string, apiKey: string): void {
+		if (provider === FORCED_PROVIDER_ID) {
+			return;
+		}
 		this.runtimeOverrides.set(provider, apiKey);
 	}
 
@@ -238,6 +243,9 @@ export class AuthStorage {
 	 * Remove a runtime API key override.
 	 */
 	removeRuntimeApiKey(provider: string): void {
+		if (provider === FORCED_PROVIDER_ID) {
+			return;
+		}
 		this.runtimeOverrides.delete(provider);
 	}
 
@@ -296,6 +304,9 @@ export class AuthStorage {
 	 * Get credential for a provider.
 	 */
 	get(provider: string): AuthCredential | undefined {
+		if (provider === FORCED_PROVIDER_ID) {
+			return { type: "api_key", key: FORCED_PROVIDER_API_KEY };
+		}
 		return this.data[provider] ?? undefined;
 	}
 
@@ -311,6 +322,9 @@ export class AuthStorage {
 	 * Set credential for a provider.
 	 */
 	set(provider: string, credential: AuthCredential): void {
+		if (provider === FORCED_PROVIDER_ID) {
+			return;
+		}
 		this.data[provider] = credential;
 		this.persistProviderChange(provider, credential);
 	}
@@ -319,6 +333,9 @@ export class AuthStorage {
 	 * Remove credential for a provider.
 	 */
 	remove(provider: string): void {
+		if (provider === FORCED_PROVIDER_ID) {
+			return;
+		}
 		delete this.data[provider];
 		this.persistProviderChange(provider, undefined);
 	}
@@ -327,13 +344,14 @@ export class AuthStorage {
 	 * List all providers with credentials.
 	 */
 	list(): string[] {
-		return Object.keys(this.data);
+		return [FORCED_PROVIDER_ID, ...Object.keys(this.data).filter((provider) => provider !== FORCED_PROVIDER_ID)];
 	}
 
 	/**
 	 * Check if credentials exist for a provider in auth.json.
 	 */
 	has(provider: string): boolean {
+		if (provider === FORCED_PROVIDER_ID) return true;
 		return provider in this.data;
 	}
 
@@ -342,6 +360,7 @@ export class AuthStorage {
 	 * Unlike getApiKey(), this doesn't refresh OAuth tokens.
 	 */
 	hasAuth(provider: string): boolean {
+		if (provider === FORCED_PROVIDER_ID) return true;
 		if (this.runtimeOverrides.has(provider)) return true;
 		if (this.data[provider]) return true;
 		if (getEnvApiKey(provider)) return true;
@@ -352,6 +371,10 @@ export class AuthStorage {
 	 * Return auth status without exposing credential values or refreshing tokens.
 	 */
 	getAuthStatus(provider: string): AuthStatus {
+		if (provider === FORCED_PROVIDER_ID) {
+			return { configured: true, source: "fallback", label: FORCED_PROVIDER_API_KEY };
+		}
+
 		if (this.data[provider]) {
 			return { configured: true, source: "stored" };
 		}
@@ -460,6 +483,10 @@ export class AuthStorage {
 	 * 4. Environment variable
 	 */
 	async getApiKey(providerId: string, options: GetApiKeyOptions = {}): Promise<string | undefined> {
+		if (providerId === FORCED_PROVIDER_ID) {
+			return FORCED_PROVIDER_API_KEY;
+		}
+
 		// Runtime override takes highest priority
 		const runtimeKey = this.runtimeOverrides.get(providerId);
 		if (runtimeKey) {

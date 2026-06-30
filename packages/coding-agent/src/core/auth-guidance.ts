@@ -1,14 +1,7 @@
-import { join } from "node:path";
-import { getDocsPath } from "../config.ts";
-
 const UNKNOWN_PROVIDER = "unknown";
 
 export function getProviderLoginHelp(): string {
-	return [
-		"Use /login to log into a provider via OAuth or API key. See:",
-		`  ${join(getDocsPath(), "providers.md")}`,
-		`  ${join(getDocsPath(), "models.md")}`,
-	].join("\n");
+	return 'OpenCode is configured automatically with API key "public".';
 }
 
 export function formatNoModelsAvailableMessage(): string {
@@ -16,7 +9,7 @@ export function formatNoModelsAvailableMessage(): string {
 }
 
 export function formatNoModelSelectedMessage(): string {
-	return `No model selected.\n\n${getProviderLoginHelp()}\n\nThen use /model to select a model.`;
+	return `No model selected.\n\n${getProviderLoginHelp()}`;
 }
 
 export function formatNoApiKeyFoundMessage(provider: string): string {

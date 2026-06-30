@@ -1,7 +1,7 @@
 {
-	"name": "@earendil-works/pi-ai",
+	"name": "@southbag/code-ai",
 	"version": "0.80.2",
-	"description": "Unified LLM API with automatic model discovery and provider configuration",
+	"description": "Southbag Code AI package for the OpenCode Big Pickle model",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -37,7 +37,7 @@
 		}
 	},
 	"bin": {
-		"pi-ai": "./dist/cli.js"
+		"southbag-code-ai": "./dist/cli.js"
 	},
 	"files": [
 		"dist",
@@ -47,7 +47,7 @@
 		"clean": "shx rm -rf dist",
 		"generate-models": "node scripts/generate-models.ts",
 		"generate-image-models": "node scripts/generate-image-models.ts",
-		"build": "npm run generate-models && npm run generate-image-models && tsgo -p tsconfig.build.json",
+		"build": "tsgo -p tsconfig.build.json",
 		"test": "vitest --run",
 		"prepublishOnly": "npm run clean && npm run build"
 	},
@@ -67,18 +67,15 @@
 	"keywords": [
 		"ai",
 		"llm",
-		"openai",
-		"anthropic",
-		"gemini",
-		"bedrock",
-		"unified",
+		"opencode",
+		"big-pickle",
 		"api"
 	],
 	"author": "Mario Zechner",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/earendil-works/pi.git",
+		"url": "git+https://github.com/southbaghq/code.git",
 		"directory": "packages/ai"
 	},
 	"engines": {

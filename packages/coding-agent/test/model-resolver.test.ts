@@ -1,4 +1,4 @@
-import type { Model } from "@earendil-works/pi-ai";
+import type { Model } from "@southbag/code-ai";
 import { describe, expect, test } from "vitest";
 import {
 	defaultModelPerProvider,
@@ -561,8 +561,6 @@ describe("default model selection", () => {
 		const result = await findInitialModel({
 			cliProvider: "openrouter",
 			cliModel: "openrouter/openai/ghost-model",
-			scopedModels: [],
-			isContinuing: false,
 			modelRegistry: registry,
 		});
 
@@ -589,8 +587,6 @@ describe("default model selection", () => {
 		} as unknown as Parameters<typeof findInitialModel>[0]["modelRegistry"];
 
 		const result = await findInitialModel({
-			scopedModels: [],
-			isContinuing: false,
 			modelRegistry: registry,
 		});
 

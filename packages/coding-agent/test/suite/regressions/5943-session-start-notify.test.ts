@@ -1,5 +1,5 @@
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
-import { Container, Text } from "@earendil-works/pi-tui";
+import { fauxAssistantMessage } from "@southbag/code-ai";
+import { Container, Text } from "@southbag/code-tui";
 import { describe, expect, it, vi } from "vitest";
 import type { AgentSessionEvent } from "../../../src/core/agent-session.ts";
 import type { ExtensionUIContext } from "../../../src/core/extensions/index.ts";
@@ -79,7 +79,7 @@ type RebindContext = {
 	renderCurrentSessionState: () => void;
 	bindCurrentSessionExtensions: () => Promise<void>;
 	subscribeToAgent: () => void;
-	updateAvailableProviderCount: () => Promise<void>;
+	footerDataProvider: { setAvailableProviderCount: (count: number) => void };
 	updateEditorBorderColor: () => void;
 	updateTerminalTitle: () => void;
 };
@@ -291,7 +291,7 @@ describe("regression #5943: session_start transient UI", () => {
 					});
 				},
 				subscribeToAgent: () => events.push("subscribe"),
-				updateAvailableProviderCount: async () => {},
+				footerDataProvider: { setAvailableProviderCount: () => {} },
 				updateEditorBorderColor: () => {},
 				updateTerminalTitle: () => {},
 			};
@@ -340,7 +340,7 @@ describe("regression #5943: session_start transient UI", () => {
 						events.push(`${event.type}:${event.message.role}:${getMessageText(event)}`);
 					});
 				},
-				updateAvailableProviderCount: async () => {},
+				footerDataProvider: { setAvailableProviderCount: () => {} },
 				updateEditorBorderColor: () => {},
 				updateTerminalTitle: () => {},
 			};
@@ -392,7 +392,7 @@ describe("regression #5943: session_start transient UI", () => {
 						events.push(`${event.type}:${event.message.role}:${getMessageText(event)}`);
 					});
 				},
-				updateAvailableProviderCount: async () => {},
+				footerDataProvider: { setAvailableProviderCount: () => {} },
 				updateEditorBorderColor: () => {},
 				updateTerminalTitle: () => {},
 			};

@@ -78,10 +78,10 @@ describe("getSupportedThinkingLevels", () => {
 		}
 	});
 
-	it("includes only high for OpenCode Grok Build", () => {
-		const model = getModel("opencode", "grok-build-0.1");
+	it("includes standard thinking levels for OpenCode Big Pickle", () => {
+		const model = getModel("opencode", "big-pickle");
 		expect(model).toBeDefined();
-		expect(getSupportedThinkingLevels(model!)).toEqual(["high"]);
+		expect(getSupportedThinkingLevels(model!)).toEqual(["off", "minimal", "low", "medium", "high"]);
 	});
 
 	it("includes only high/xhigh plus off for DeepSeek V4 Flash on OpenRouter", () => {

@@ -1,7 +1,7 @@
 {
-	"name": "@earendil-works/pi-agent-core",
+	"name": "@southbag/code-core",
 	"version": "0.80.2",
-	"description": "General-purpose agent with transport abstraction, state management, and attachment support",
+	"description": "Southbag Code core agent runtime",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -29,7 +29,7 @@
 		"prepublishOnly": "npm run clean && npm run build"
 	},
 	"dependencies": {
-		"@earendil-works/pi-ai": "^0.80.2",
+		"@southbag/code-ai": "^0.80.2",
 		"ignore": "7.0.5",
 		"typebox": "1.1.38",
 		"yaml": "2.9.0"
@@ -45,7 +45,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/earendil-works/pi.git",
+		"url": "git+https://github.com/southbaghq/code.git",
 		"directory": "packages/agent"
 	},
 	"engines": {

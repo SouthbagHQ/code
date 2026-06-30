@@ -26,37 +26,6 @@ describe("SettingsManager", () => {
 	});
 
 	describe("preserves externally added settings", () => {
-		it("should preserve enabledModels when changing thinking level", async () => {
-			// Create initial settings file
-			const settingsPath = join(agentDir, "settings.json");
-			writeFileSync(
-				settingsPath,
-				JSON.stringify({
-					theme: "dark",
-					defaultModel: "claude-sonnet",
-				}),
-			);
-
-			// Create SettingsManager (simulates pi starting up)
-			const manager = SettingsManager.create(projectDir, agentDir);
-
-			// Simulate user editing settings.json externally to add enabledModels
-			const currentSettings = JSON.parse(readFileSync(settingsPath, "utf-8"));
-			currentSettings.enabledModels = ["claude-opus-4-5", "gpt-5.2-codex"];
-			writeFileSync(settingsPath, JSON.stringify(currentSettings, null, 2));
-
-			// User changes thinking level via Shift+Tab
-			manager.setDefaultThinkingLevel("high");
-			await manager.flush();
-
-			// Verify enabledModels is preserved
-			const savedSettings = JSON.parse(readFileSync(settingsPath, "utf-8"));
-			expect(savedSettings.enabledModels).toEqual(["claude-opus-4-5", "gpt-5.2-codex"]);
-			expect(savedSettings.defaultThinkingLevel).toBe("high");
-			expect(savedSettings.theme).toBe("dark");
-			expect(savedSettings.defaultModel).toBe("claude-sonnet");
-		});
-
 		it("should preserve custom settings when changing theme", async () => {
 			const settingsPath = join(agentDir, "settings.json");
 			writeFileSync(

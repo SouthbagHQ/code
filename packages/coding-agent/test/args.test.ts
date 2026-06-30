@@ -55,8 +55,13 @@ describe("parseArgs", () => {
 		test("does not consume options after -p as prompts", () => {
 			const result = parseArgs(["-p", "--provider", "openai", "Say hi."]);
 			expect(result.print).toBe(true);
-			expect(result.provider).toBe("openai");
 			expect(result.messages).toEqual(["Say hi."]);
+			expect(result.diagnostics).toEqual([
+				{
+					type: "error",
+					message: "--provider is not supported. Southbag Code always uses opencode/big-pickle.",
+				},
+			]);
 		});
 	});
 
@@ -85,14 +90,24 @@ describe("parseArgs", () => {
 	});
 
 	describe("flags with values", () => {
-		test("parses --provider", () => {
+		test("rejects --provider", () => {
 			const result = parseArgs(["--provider", "openai"]);
-			expect(result.provider).toBe("openai");
+			expect(result.diagnostics).toEqual([
+				{
+					type: "error",
+					message: "--provider is not supported. Southbag Code always uses opencode/big-pickle.",
+				},
+			]);
 		});
 
-		test("parses --model", () => {
+		test("rejects --model", () => {
 			const result = parseArgs(["--model", "gpt-4o"]);
-			expect(result.model).toBe("gpt-4o");
+			expect(result.diagnostics).toEqual([
+				{
+					type: "error",
+					message: "--model is not supported. Southbag Code always uses opencode/big-pickle.",
+				},
+			]);
 		});
 
 		test("parses --api-key", () => {
@@ -151,9 +166,14 @@ describe("parseArgs", () => {
 			expect(result.thinking).toBe("high");
 		});
 
-		test("parses --models as comma-separated list", () => {
+		test("rejects --models", () => {
 			const result = parseArgs(["--models", "gpt-4o,claude-sonnet,gemini-pro"]);
-			expect(result.models).toEqual(["gpt-4o", "claude-sonnet", "gemini-pro"]);
+			expect(result.diagnostics).toEqual([
+				{
+					type: "error",
+					message: "--models is not supported. Southbag Code always uses opencode/big-pickle.",
+				},
+			]);
 		});
 	});
 
@@ -182,8 +202,13 @@ describe("parseArgs", () => {
 			const result = parseArgs(["--name", "named-run", "--print", "--model", "gpt-4o", "hello"]);
 			expect(result.name).toBe("named-run");
 			expect(result.print).toBe(true);
-			expect(result.model).toBe("gpt-4o");
 			expect(result.messages).toEqual(["hello"]);
+			expect(result.diagnostics).toEqual([
+				{
+					type: "error",
+					message: "--model is not supported. Southbag Code always uses opencode/big-pickle.",
+				},
+			]);
 		});
 	});
 
@@ -430,12 +455,20 @@ describe("parseArgs", () => {
 				"@prompt.md",
 				"Do the task",
 			]);
-			expect(result.provider).toBe("anthropic");
-			expect(result.model).toBe("claude-sonnet");
 			expect(result.print).toBe(true);
 			expect(result.thinking).toBe("high");
 			expect(result.fileArgs).toEqual(["prompt.md"]);
 			expect(result.messages).toEqual(["Do the task"]);
+			expect(result.diagnostics).toEqual([
+				{
+					type: "error",
+					message: "--provider is not supported. Southbag Code always uses opencode/big-pickle.",
+				},
+				{
+					type: "error",
+					message: "--model is not supported. Southbag Code always uses opencode/big-pickle.",
+				},
+			]);
 		});
 	});
 });

@@ -1349,7 +1349,7 @@ describe("openai-completions tool_choice", () => {
 	});
 
 	it("sends max_tokens for OpenCode completions models", async () => {
-		const cases = [getModel("opencode-go", "kimi-k2.6")!, getModel("opencode", "grok-build-0.1")!] as const;
+		const cases = [getModel("opencode", "big-pickle")!] as const;
 
 		for (const model of cases) {
 			let payload: unknown;
@@ -1375,8 +1375,8 @@ describe("openai-completions tool_choice", () => {
 		}
 	});
 
-	it("omits reasoning effort for OpenCode Grok Build", async () => {
-		const model = getModel("opencode", "grok-build-0.1")!;
+	it("sends reasoning effort for OpenCode Big Pickle", async () => {
+		const model = getModel("opencode", "big-pickle")!;
 		let payload: unknown;
 
 		await streamSimple(
@@ -1394,7 +1394,7 @@ describe("openai-completions tool_choice", () => {
 		).result();
 
 		const params = (payload ?? mockState.lastParams) as { reasoning_effort?: string };
-		expect(params.reasoning_effort).toBeUndefined();
+		expect(params.reasoning_effort).toBe("high");
 	});
 
 	it("does not double-count reasoning tokens in completion usage", async () => {

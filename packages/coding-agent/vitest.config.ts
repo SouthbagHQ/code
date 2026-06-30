@@ -20,6 +20,11 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: [
+			{ find: /^@southbag\/code-ai$/, replacement: aiSrcIndex },
+			{ find: /^@southbag\/code-ai\/compat$/, replacement: aiSrcCompat },
+			{ find: /^@southbag\/code-ai\/oauth$/, replacement: aiSrcOAuth },
+			{ find: /^@southbag\/code-core$/, replacement: agentSrcIndex },
+			{ find: /^@southbag\/code-tui$/, replacement: tuiSrcIndex },
 			{ find: /^@earendil-works\/pi-ai$/, replacement: aiSrcIndex },
 			{ find: /^@earendil-works\/pi-ai\/compat$/, replacement: aiSrcCompat },
 			{ find: /^@earendil-works\/pi-ai\/oauth$/, replacement: aiSrcOAuth },

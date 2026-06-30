@@ -7,7 +7,7 @@ This page gets you from install to a useful first pi session.
 Pi is distributed as an npm package:
 
 ```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+npm install -g --ignore-scripts @southbag/code
 ```
 
 `--ignore-scripts` disables dependency lifecycle scripts during install. Pi does not require install scripts for normal npm installs.
@@ -18,16 +18,16 @@ Use the package manager that installed pi. The curl installer uses npm globally,
 
 ```bash
 # curl installer or npm install -g
-npm uninstall -g @earendil-works/pi-coding-agent
+npm uninstall -g @southbag/code
 
 # pnpm
-pnpm remove -g @earendil-works/pi-coding-agent
+pnpm remove -g @southbag/code
 
 # Yarn
-yarn global remove @earendil-works/pi-coding-agent
+yarn global remove @southbag/code
 
 # Bun
-bun uninstall -g @earendil-works/pi-coding-agent
+bun uninstall -g @southbag/code
 ```
 
 Uninstalling pi leaves settings, credentials, sessions, and installed pi packages in `~/.pi/agent/`.
@@ -125,9 +125,9 @@ In interactive mode:
 
 The command output is sent to the model. Use `!!command` to run a command without adding its output to the model context.
 
-### Switch models
+### Thinking
 
-Use `/model` or Ctrl+L to choose a model. Use Shift+Tab to cycle thinking level. Use Ctrl+P / Shift+Ctrl+P to cycle through scoped models.
+Use Shift+Tab to cycle thinking level.
 
 ### Continue later
 

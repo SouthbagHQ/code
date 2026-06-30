@@ -1,7 +1,7 @@
 {
-	"name": "@earendil-works/pi-tui",
+	"name": "@southbag/code-tui",
 	"version": "0.80.2",
-	"description": "Terminal User Interface library with differential rendering for efficient text-based applications",
+	"description": "Southbag Code terminal UI library",
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
@@ -29,7 +29,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/earendil-works/pi.git",
+		"url": "git+https://github.com/southbaghq/code.git",
 		"directory": "packages/tui"
 	},
 	"engines": {

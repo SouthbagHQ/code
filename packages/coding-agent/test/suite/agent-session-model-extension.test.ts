@@ -1,5 +1,5 @@
-import type { AgentTool, ThinkingLevel } from "@earendil-works/pi-agent-core";
-import { fauxAssistantMessage, fauxToolCall, type Model } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage, fauxToolCall } from "@southbag/code-ai";
+import type { AgentTool } from "@southbag/code-core";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it } from "vitest";
 import type { BuildSystemPromptOptions, ExtensionAPI } from "../../src/index.ts";
@@ -42,31 +42,6 @@ describe("AgentSession model and extension characterization", () => {
 				.filter((entry) => entry.type === "model_change")
 				.map((entry) => `${entry.provider}/${entry.modelId}`),
 		).toEqual([`${nextModel.provider}/${nextModel.id}`]);
-	});
-
-	it("cycles through scoped models and preserves the scoped thinking preference", async () => {
-		const harness = await createHarness({
-			models: [
-				{ id: "faux-1", name: "One", reasoning: true },
-				{ id: "faux-2", name: "Two", reasoning: false },
-			],
-		});
-		harnesses.push(harness);
-		const modelOne = harness.getModel("faux-1")!;
-		const modelTwo = harness.getModel("faux-2")!;
-		harness.session.setScopedModels([{ model: modelOne, thinkingLevel: "high" }, { model: modelTwo }] as Array<{
-			model: Model<string>;
-			thinkingLevel?: ThinkingLevel;
-		}>);
-		harness.session.setThinkingLevel("high");
-
-		await harness.session.cycleModel();
-		expect(harness.session.model?.id).toBe("faux-2");
-		expect(harness.session.thinkingLevel).toBe("off");
-
-		await harness.session.cycleModel();
-		expect(harness.session.model?.id).toBe("faux-1");
-		expect(harness.session.thinkingLevel).toBe("high");
 	});
 
 	it("clamps thinking levels to model capabilities and cycles available levels", async () => {

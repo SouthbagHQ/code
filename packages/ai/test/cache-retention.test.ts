@@ -461,38 +461,34 @@ describe("Cache Retention (PI_CACHE_RETENTION)", () => {
 			expect(capturedPayload.prompt_cache_retention).toBeUndefined();
 		});
 
-		it.each([
-			MODELS.opencode["deepseek-v4-flash"],
-			MODELS.opencode["deepseek-v4-pro"],
-			MODELS.opencode["kimi-k2.5"],
-			MODELS.opencode["kimi-k2.6"],
-			MODELS.opencode["minimax-m2.7"],
-			MODELS["opencode-go"]["kimi-k2.6"],
-		] as const)("should omit long cache retention for $provider/$id", async (metadata) => {
-			const model = metadata as Model<"openai-completions">;
-			let capturedPayload: OpenAICompletionsCachePayload | undefined;
+		it.each([MODELS.opencode["big-pickle"]] as const)(
+			"should omit long cache retention for $provider/$id",
+			async (metadata) => {
+				const model = metadata as Model<"openai-completions">;
+				let capturedPayload: OpenAICompletionsCachePayload | undefined;
 
-			try {
-				const s = streamOpenAICompletions(model, context, {
-					apiKey: "fake-key",
-					cacheRetention: "long",
-					sessionId: "session-opencode-long-cache-unsupported",
-					onPayload: stopAfterPayload<OpenAICompletionsCachePayload>((payload) => {
-						capturedPayload = payload;
-					}),
-				});
+				try {
+					const s = streamOpenAICompletions(model, context, {
+						apiKey: "fake-key",
+						cacheRetention: "long",
+						sessionId: "session-opencode-long-cache-unsupported",
+						onPayload: stopAfterPayload<OpenAICompletionsCachePayload>((payload) => {
+							capturedPayload = payload;
+						}),
+					});
 
-				for await (const event of s) {
-					if (event.type === "error") break;
+					for await (const event of s) {
+						if (event.type === "error") break;
+					}
+				} catch {
+					// Expected to fail
 				}
-			} catch {
-				// Expected to fail
-			}
 
-			expect(model.compat?.supportsLongCacheRetention).toBe(false);
-			expect(capturedPayload).toBeDefined();
-			expect(capturedPayload?.prompt_cache_key).toBeUndefined();
-			expect(capturedPayload?.prompt_cache_retention).toBeUndefined();
-		});
+				expect(model.compat?.supportsLongCacheRetention).toBe(false);
+				expect(capturedPayload).toBeDefined();
+				expect(capturedPayload?.prompt_cache_key).toBeUndefined();
+				expect(capturedPayload?.prompt_cache_retention).toBeUndefined();
+			},
+		);
 	});
 });
