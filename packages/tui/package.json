@@ -1,6 +1,6 @@
 {
 	"name": "@southbag/code-tui",
-	"version": "0.80.3",
+	"version": "0.80.4",
 	"description": "Southbag Code terminal UI library",
 	"type": "module",
 	"main": "dist/index.js",
@@ -28,7 +28,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/southbaghq/code.git",
+		"url": "https://github.com/SouthbagHQ/code",
 		"directory": "packages/tui"
 	},
 	"engines": {

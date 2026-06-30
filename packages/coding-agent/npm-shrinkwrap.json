@@ -1,17 +1,17 @@
 {
 	"name": "@southbag/code",
-	"version": "0.80.3",
+	"version": "0.80.4",
 	"lockfileVersion": 3,
 	"requires": true,
 	"packages": {
 		"": {
 			"name": "@southbag/code",
-			"version": "0.80.3",
+			"version": "0.80.4",
 			"license": "MIT",
 			"dependencies": {
-				"@southbag/code-core": "^0.80.3",
-				"@southbag/code-ai": "^0.80.3",
-				"@southbag/code-tui": "^0.80.3",
+				"@southbag/code-core": "^0.80.4",
+				"@southbag/code-ai": "^0.80.4",
+				"@southbag/code-tui": "^0.80.4",
 				"@silvia-odwyer/photon-node": "0.3.4",
 				"chalk": "5.6.2",
 				"cross-spawn": "7.0.6",
@@ -925,8 +925,8 @@
 			}
 		},
 		"node_modules/@southbag/code-ai": {
-			"version": "0.80.3",
-			"resolved": "https://registry.npmjs.org/@southbag/code-ai/-/code-ai-0.80.3.tgz",
+			"version": "0.80.4",
+			"resolved": "https://registry.npmjs.org/@southbag/code-ai/-/code-ai-0.80.4.tgz",
 			"license": "MIT",
 			"dependencies": {
 				"@anthropic-ai/sdk": "0.91.1",
@@ -949,11 +949,11 @@
 			}
 		},
 		"node_modules/@southbag/code-core": {
-			"version": "0.80.3",
-			"resolved": "https://registry.npmjs.org/@southbag/code-core/-/code-core-0.80.3.tgz",
+			"version": "0.80.4",
+			"resolved": "https://registry.npmjs.org/@southbag/code-core/-/code-core-0.80.4.tgz",
 			"license": "MIT",
 			"dependencies": {
-				"@southbag/code-ai": "^0.80.3",
+				"@southbag/code-ai": "^0.80.4",
 				"ignore": "7.0.5",
 				"typebox": "1.1.38",
 				"yaml": "2.9.0"
@@ -963,8 +963,8 @@
 			}
 		},
 		"node_modules/@southbag/code-tui": {
-			"version": "0.80.3",
-			"resolved": "https://registry.npmjs.org/@southbag/code-tui/-/code-tui-0.80.3.tgz",
+			"version": "0.80.4",
+			"resolved": "https://registry.npmjs.org/@southbag/code-tui/-/code-tui-0.80.4.tgz",
 			"license": "MIT",
 			"dependencies": {
 				"get-east-asian-width": "1.6.0",

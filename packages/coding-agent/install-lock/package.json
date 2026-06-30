@@ -1,10 +1,10 @@
 {
 	"name": "@southbag/code-install",
-	"version": "0.80.3",
+	"version": "0.80.4",
 	"private": true,
 	"description": "Lockfile root used by the Southbag Code installer and updater.",
 	"dependencies": {
-		"@southbag/code": "0.80.3"
+		"@southbag/code": "0.80.4"
 	},
 	"overrides": {
 		"rimraf": "6.1.2",

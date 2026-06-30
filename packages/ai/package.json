@@ -1,6 +1,6 @@
 {
 	"name": "@southbag/code-ai",
-	"version": "0.80.3",
+	"version": "0.80.4",
 	"description": "Southbag Code AI package",
 	"type": "module",
 	"main": "./dist/index.js",
@@ -74,7 +74,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/southbaghq/code.git",
+		"url": "https://github.com/SouthbagHQ/code",
 		"directory": "packages/ai"
 	},
 	"engines": {
