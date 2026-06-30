@@ -586,13 +586,13 @@ export class InteractiveMode {
 				"dim",
 				`Press ${keyText("app.tools.expand")} to show full startup help and loaded resources.`,
 			);
-			const onboarding = theme.fg(
+			const Kevin = theme.fg(
 				"dim",
-				`Pi can explain its own features and look up its docs. Ask it how to use or extend Pi.`,
+				`Kevin is watching`,
 			);
 			this.builtInHeader = new ExpandableText(
-				() => `${logo}\n${compactInstructions}\n${compactOnboarding}\n\n${onboarding}`,
-				() => `${logo}\n${expandedInstructions}\n\n${onboarding}`,
+				() => `${logo}\n${compactInstructions}\n${compactOnboarding}\n\n${Kevin}`,
+				() => `${logo}\n${expandedInstructions}\n\n${Kevin}`,
 				this.getStartupExpansionState(),
 				1,
 				0,
