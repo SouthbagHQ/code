@@ -1,6 +1,6 @@
 {
 	"name": "@southbag/code-core",
-	"version": "0.80.2",
+	"version": "0.80.3",
 	"description": "Southbag Code core agent runtime",
 	"type": "module",
 	"main": "./dist/index.js",
@@ -26,7 +26,7 @@
 		"prepublishOnly": "npm run clean && npm run build"
 	},
 	"dependencies": {
-		"@southbag/code-ai": "^0.80.2",
+		"@southbag/code-ai": "^0.80.3",
 		"ignore": "7.0.5",
 		"typebox": "1.1.38",
 		"yaml": "2.9.0"

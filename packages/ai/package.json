@@ -1,6 +1,6 @@
 {
 	"name": "@southbag/code-ai",
-	"version": "0.80.2",
+	"version": "0.80.3",
 	"description": "Southbag Code AI package",
 	"type": "module",
 	"main": "./dist/index.js",

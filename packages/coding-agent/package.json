@@ -1,6 +1,6 @@
 {
 	"name": "@southbag/code",
-	"version": "0.80.2",
+	"version": "0.80.3",
 	"description": "Southbag Code CLI with read, bash, edit, write tools and session management",
 	"type": "module",
 	"piConfig": {
@@ -40,9 +40,9 @@
 		"prepublishOnly": "npm run clean && npm run build && npm run shrinkwrap"
 	},
 	"dependencies": {
-		"@southbag/code-core": "^0.80.2",
-		"@southbag/code-ai": "^0.80.2",
-		"@southbag/code-tui": "^0.80.2",
+		"@southbag/code-core": "^0.80.3",
+		"@southbag/code-ai": "^0.80.3",
+		"@southbag/code-tui": "^0.80.3",
 		"@silvia-odwyer/photon-node": "0.3.4",
 		"chalk": "5.6.2",
 		"cross-spawn": "7.0.6",
