@@ -29,7 +29,7 @@ Disable discovery with `--no-themes`.
 
 ## Selecting a Theme
 
-Select a theme via `/settings` or in `settings.json`:
+Select a theme in `settings.json`:
 
 ```json
 {
@@ -114,7 +114,7 @@ vim ~/.pi/agent/themes/my-theme.json
 }
 ```
 
-3. Select the theme via `/settings`.
+3. Select the theme in `settings.json`.
 
 **Hot reload:** When you edit the currently active custom theme file, pi reloads it automatically for immediate visual feedback.
 

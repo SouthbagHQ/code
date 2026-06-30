@@ -1501,7 +1501,7 @@ Each entry has this shape:
 
 Use `sourceInfo` as the canonical provenance field. Do not infer ownership from command names or from ad hoc path parsing.
 
-Built-in interactive commands (like `/settings`) are not included here. They are handled only in interactive
+Built-in interactive commands (like `/hotkeys`) are not included here. They are handled only in interactive
 mode and would not execute if sent via `prompt`.
 
 ### pi.registerMessageRenderer(customType, renderer)

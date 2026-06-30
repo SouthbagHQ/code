@@ -6,6 +6,10 @@
 
 - Added an `externalEditor` settings.json override for Ctrl+G external editor commands, with default fallbacks to Notepad on Windows and `nano` elsewhere ([#6122](https://github.com/earendil-works/pi/issues/6122)).
 
+### Changed
+
+- Removed the interactive `/settings` command and hardcoded settings UI defaults for image blocking, skill commands, thinking visibility, changelog collapse, startup verbosity, telemetry, and double-escape behavior.
+
 ### Fixed
 
 - Fixed `--session` and `SessionManager.open()` to reject non-empty invalid session files without overwriting them ([#6002](https://github.com/earendil-works/pi/issues/6002)).

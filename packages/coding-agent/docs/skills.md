@@ -65,29 +65,16 @@ For project-level Claude Code skills, add to `.pi/settings.json`:
 
 1. At startup, pi scans skill locations and extracts names and descriptions
 2. The system prompt includes available skills in XML format per the [specification](https://agentskills.io/integrate-skills)
-3. When a task matches, the agent uses `read` to load the full SKILL.md (models don't always do this; use prompting or `/skill:name` to force it)
+3. When a task matches, the agent uses `read` to load the full SKILL.md
 4. The agent follows the instructions, using relative paths to reference scripts and assets
 
 This is progressive disclosure: only descriptions are always in context, full instructions load on-demand.
 
 ## Skill Commands
 
-Skills register as `/skill:name` commands:
+Skill slash commands are disabled:
 
-```bash
-/skill:brave-search           # Load and execute the skill
-/skill:pdf-tools extract      # Load skill with arguments
-```
-
-Arguments after the command are appended to the skill content as `User: <args>`.
-
-Toggle skill commands via `/settings` in interactive mode or in `settings.json`:
-
-```json
-{
-  "enableSkillCommands": true
-}
-```
+The agent still discovers skills and loads matching skill instructions automatically, but skills are not registered as `/skill:name` commands.
 
 ## Skill Structure
 

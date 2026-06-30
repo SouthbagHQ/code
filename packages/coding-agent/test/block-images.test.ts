@@ -28,9 +28,9 @@ function createTinyBmp1x1Red24bpp(): Buffer {
 
 describe("blockImages setting", () => {
 	describe("SettingsManager", () => {
-		it("should default blockImages to false", () => {
+		it("should default blockImages to true", () => {
 			const manager = SettingsManager.inMemory({});
-			expect(manager.getBlockImages()).toBe(false);
+			expect(manager.getBlockImages()).toBe(true);
 		});
 
 		it("should return true when blockImages is set to true", () => {
@@ -38,15 +38,15 @@ describe("blockImages setting", () => {
 			expect(manager.getBlockImages()).toBe(true);
 		});
 
-		it("should persist blockImages setting via setBlockImages", () => {
+		it("should ignore blockImages changes", () => {
 			const manager = SettingsManager.inMemory({});
-			expect(manager.getBlockImages()).toBe(false);
+			expect(manager.getBlockImages()).toBe(true);
 
 			manager.setBlockImages(true);
 			expect(manager.getBlockImages()).toBe(true);
 
 			manager.setBlockImages(false);
-			expect(manager.getBlockImages()).toBe(false);
+			expect(manager.getBlockImages()).toBe(true);
 		});
 
 		it("should handle blockImages alongside autoResize", () => {
