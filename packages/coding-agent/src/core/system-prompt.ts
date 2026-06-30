@@ -2,7 +2,15 @@
  * System prompt construction and project context loading
  */
 
+import { execFileSync } from "node:child_process";
+import { cpus, totalmem } from "node:os";
 import { formatSkillsForPrompt, type Skill } from "./skills.ts";
+
+export interface ComputerInfo {
+	model?: string;
+	ram?: string;
+	cpu?: string;
+}
 
 export interface BuildSystemPromptOptions {
 	/** Custom system prompt (replaces default). */
@@ -21,6 +29,58 @@ export interface BuildSystemPromptOptions {
 	contextFiles?: Array<{ path: string; content: string }>;
 	/** Pre-loaded skills. */
 	skills?: Skill[];
+	/** Pre-loaded computer hardware details. */
+	computerInfo?: ComputerInfo;
+}
+
+let cachedComputerInfo: ComputerInfo | undefined;
+
+function readSysctl(name: string): string | undefined {
+	try {
+		const value = execFileSync("sysctl", ["-n", name], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+		const trimmed = value.trim();
+		return trimmed.length > 0 ? trimmed : undefined;
+	} catch {
+		return undefined;
+	}
+}
+
+function formatRam(bytes: number): string | undefined {
+	if (!Number.isFinite(bytes) || bytes <= 0) {
+		return undefined;
+	}
+	const gib = bytes / 1024 ** 3;
+	return `${Math.round(gib)} GB`;
+}
+
+function normalizeComputerInfo(info: ComputerInfo): ComputerInfo {
+	return {
+		model: info.model?.trim() || undefined,
+		ram: info.ram?.trim() || undefined,
+		cpu: info.cpu?.trim() || undefined,
+	};
+}
+
+function getHostComputerInfo(): ComputerInfo {
+	if (cachedComputerInfo) {
+		return cachedComputerInfo;
+	}
+
+	const [firstCpu] = cpus();
+	cachedComputerInfo = normalizeComputerInfo({
+		model: readSysctl("hw.model"),
+		ram: formatRam(totalmem()),
+		cpu: readSysctl("machdep.cpu.brand_string") ?? firstCpu?.model,
+	});
+	return cachedComputerInfo;
+}
+
+function formatComputerInfoForPrompt(info: ComputerInfo): string {
+	const lines: string[] = [];
+	if (info.model) lines.push(`Computer model: ${info.model}`);
+	if (info.ram) lines.push(`Computer RAM: ${info.ram}`);
+	if (info.cpu) lines.push(`Computer CPU: ${info.cpu}`);
+	return lines.join("\n");
 }
 
 /** Build the system prompt with tools, guidelines, and context */
@@ -34,6 +94,7 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions): string {
 		cwd,
 		contextFiles: providedContextFiles,
 		skills: providedSkills,
+		computerInfo: providedComputerInfo,
 	} = options;
 	const resolvedCwd = cwd;
 	const promptCwd = resolvedCwd.replace(/\\/g, "/");
@@ -48,6 +109,8 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions): string {
 
 	const contextFiles = providedContextFiles ?? [];
 	const skills = providedSkills ?? [];
+	const computerInfo = normalizeComputerInfo(providedComputerInfo ?? getHostComputerInfo());
+	const computerInfoSection = formatComputerInfoForPrompt(computerInfo);
 
 	if (customPrompt) {
 		let prompt = customPrompt;
@@ -75,6 +138,9 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions): string {
 		// Add date and working directory last
 		prompt += `\nCurrent date: ${date}`;
 		prompt += `\nCurrent working directory: ${promptCwd}`;
+		if (computerInfoSection) {
+			prompt += `\n${computerInfoSection}`;
+		}
 
 		return prompt;
 	}
@@ -193,6 +259,9 @@ ${guidelines}`;
 	// Add date and working directory last
 	prompt += `\nCurrent date: ${date}`;
 	prompt += `\nCurrent working directory: ${promptCwd}`;
+	if (computerInfoSection) {
+		prompt += `\n${computerInfoSection}`;
+	}
 
 	return prompt;
 }
