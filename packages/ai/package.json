@@ -1,7 +1,7 @@
 {
 	"name": "@southbag/code-ai",
 	"version": "0.80.2",
-	"description": "Southbag Code AI package for the OpenCode Big Pickle model",
+	"description": "Southbag Code AI package",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
