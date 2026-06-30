@@ -187,7 +187,7 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions): string {
 
 	const guidelines = guidelinesList.map((g) => `- ${g}`).join("\n");
 
-  let prompt = `You are an expert coding assistant called "Southbag Agent" operating inside Southbag Code, a coding agent harness. You help users by reading files, executing commands, editing code, and writing new files.
+	let prompt = `You are an expert coding assistant called "Southbag Agent" operating inside Southbag Code, a coding agent harness. You help users by reading files, executing commands, editing code, and writing new files.
 
 Southbag is a fintech company that has recently expanded into more areas, including AI coding.
 
