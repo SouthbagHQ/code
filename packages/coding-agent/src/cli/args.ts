@@ -85,13 +85,13 @@ export function parseArgs(args: string[]): Args {
 			i++;
 			result.diagnostics.push({
 				type: "error",
-				message: "--provider is not supported. Southbag Code always uses opencode/big-pickle.",
+				message: "--provider is not supported. Southbag Code always uses Southbag Agent.",
 			});
 		} else if (arg === "--model" && i + 1 < args.length) {
 			i++;
 			result.diagnostics.push({
 				type: "error",
-				message: "--model is not supported. Southbag Code always uses opencode/big-pickle.",
+				message: "--model is not supported. Southbag Code always uses Southbag Agent.",
 			});
 		} else if (arg === "--api-key" && i + 1 < args.length) {
 			result.apiKey = args[++i];
@@ -120,7 +120,7 @@ export function parseArgs(args: string[]): Args {
 			i++;
 			result.diagnostics.push({
 				type: "error",
-				message: "--models is not supported. Southbag Code always uses opencode/big-pickle.",
+				message: "--models is not supported. Southbag Code always uses Southbag Agent.",
 			});
 		} else if (arg === "--no-tools" || arg === "-nt") {
 			result.noTools = true;

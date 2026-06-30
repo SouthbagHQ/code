@@ -60,7 +60,7 @@ export async function listModels(modelRegistry: ModelRegistry, searchPattern?: s
 	// Calculate column widths
 	const rows = filteredModels.map((m) => ({
 		provider: m.provider,
-		model: m.id,
+		model: m.name ?? m.id,
 		context: formatTokenCount(m.contextWindow),
 		maxOut: formatTokenCount(m.maxTokens),
 		thinking: m.reasoning ? "yes" : "no",

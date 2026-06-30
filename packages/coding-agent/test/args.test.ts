@@ -59,7 +59,7 @@ describe("parseArgs", () => {
 			expect(result.diagnostics).toEqual([
 				{
 					type: "error",
-					message: "--provider is not supported. Southbag Code always uses opencode/big-pickle.",
+					message: "--provider is not supported. Southbag Code always uses Southbag Agent.",
 				},
 			]);
 		});
@@ -95,7 +95,7 @@ describe("parseArgs", () => {
 			expect(result.diagnostics).toEqual([
 				{
 					type: "error",
-					message: "--provider is not supported. Southbag Code always uses opencode/big-pickle.",
+					message: "--provider is not supported. Southbag Code always uses Southbag Agent.",
 				},
 			]);
 		});
@@ -105,7 +105,7 @@ describe("parseArgs", () => {
 			expect(result.diagnostics).toEqual([
 				{
 					type: "error",
-					message: "--model is not supported. Southbag Code always uses opencode/big-pickle.",
+					message: "--model is not supported. Southbag Code always uses Southbag Agent.",
 				},
 			]);
 		});
@@ -171,7 +171,7 @@ describe("parseArgs", () => {
 			expect(result.diagnostics).toEqual([
 				{
 					type: "error",
-					message: "--models is not supported. Southbag Code always uses opencode/big-pickle.",
+					message: "--models is not supported. Southbag Code always uses Southbag Agent.",
 				},
 			]);
 		});
@@ -206,7 +206,7 @@ describe("parseArgs", () => {
 			expect(result.diagnostics).toEqual([
 				{
 					type: "error",
-					message: "--model is not supported. Southbag Code always uses opencode/big-pickle.",
+					message: "--model is not supported. Southbag Code always uses Southbag Agent.",
 				},
 			]);
 		});
@@ -462,11 +462,11 @@ describe("parseArgs", () => {
 			expect(result.diagnostics).toEqual([
 				{
 					type: "error",
-					message: "--provider is not supported. Southbag Code always uses opencode/big-pickle.",
+					message: "--provider is not supported. Southbag Code always uses Southbag Agent.",
 				},
 				{
 					type: "error",
-					message: "--model is not supported. Southbag Code always uses opencode/big-pickle.",
+					message: "--model is not supported. Southbag Code always uses Southbag Agent.",
 				},
 			]);
 		});

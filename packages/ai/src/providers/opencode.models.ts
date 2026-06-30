@@ -3,7 +3,7 @@ import type { Model } from "../types.ts";
 export const OPENCODE_MODELS = {
 	"big-pickle": {
 		id: "big-pickle",
-		name: "Big Pickle",
+		name: "Southbag Agent",
 		api: "openai-completions",
 		provider: "opencode",
 		baseUrl: "https://opencode.ai/zen/v1",
