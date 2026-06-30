@@ -61,14 +61,13 @@ Before submitting a PR:
 
 ```bash
 npm run check
-./test.sh
 ```
 
-Both must pass.
+It must pass.
 
 Do not edit `CHANGELOG.md`. Changelog entries are added by maintainers.
 
-If you are adding a new provider to `packages/ai`, see `AGENTS.md` for required tests.
+If you are adding a new provider to `packages/ai`, see `AGENTS.md` for project-specific requirements.
 
 ## Questions?
 

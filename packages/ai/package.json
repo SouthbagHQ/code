@@ -48,7 +48,6 @@
 		"generate-models": "node scripts/generate-models.ts",
 		"generate-image-models": "node scripts/generate-image-models.ts",
 		"build": "tsgo -p tsconfig.build.json",
-		"test": "vitest --run",
 		"prepublishOnly": "npm run clean && npm run build"
 	},
 	"dependencies": {
@@ -83,7 +82,6 @@
 	},
 	"devDependencies": {
 		"@types/node": "24.12.4",
-		"canvas": "3.2.3",
-		"vitest": "4.1.9"
+		"canvas": "3.2.3"
 	}
 }

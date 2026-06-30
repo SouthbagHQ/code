@@ -52,14 +52,6 @@ Never use `__dirname` directly for package assets.
 - Rendered TUI lines with ANSI codes
 - Last messages sent to the LLM
 
-## Testing
-
-```bash
-./test.sh                         # Run non-LLM tests (no API keys needed)
-npm test                          # Run all tests
-npm test -- test/specific.test.ts # Run specific test
-```
-
 ## Project Structure
 
 ```
