@@ -154,7 +154,6 @@ for platform in "${PLATFORMS[@]}"; do
     cp dist/modes/interactive/assets/* "$OUTPUT_DIR/$platform/assets/"
     cp -r dist/core/export-html "$OUTPUT_DIR/$platform/"
     cp -r docs "$OUTPUT_DIR/$platform/"
-    cp -r examples "$OUTPUT_DIR/$platform/"
 
     case "$platform" in
         darwin-arm64)
