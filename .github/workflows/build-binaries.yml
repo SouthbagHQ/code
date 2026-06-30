@@ -62,18 +62,18 @@ jobs:
           VERSION="${VERSION#v}"  # Remove 'v' prefix
           node scripts/release-notes.mjs extract --version "${VERSION}" --tag "${RELEASE_TAG}" --out release-assets/RELEASE_NOTES.md
           node scripts/generate-coding-agent-install-lock.mjs --check
-          cp packages/coding-agent/install-lock/package.json release-assets/pi-coding-agent-install-package.json
-          cp packages/coding-agent/install-lock/package-lock.json release-assets/pi-coding-agent-install-package-lock.json
+          cp packages/coding-agent/install-lock/package.json release-assets/southbag-code-install-package.json
+          cp packages/coding-agent/install-lock/package-lock.json release-assets/southbag-code-install-package-lock.json
 
           cd packages/coding-agent/binaries
 
           binary_assets=(
-            pi-darwin-arm64.tar.gz
-            pi-darwin-x64.tar.gz
-            pi-linux-x64.tar.gz
-            pi-linux-arm64.tar.gz
-            pi-windows-x64.zip
-            pi-windows-arm64.zip
+            southbag-code-darwin-arm64.tar.gz
+            southbag-code-darwin-x64.tar.gz
+            southbag-code-linux-x64.tar.gz
+            southbag-code-linux-arm64.tar.gz
+            southbag-code-windows-x64.zip
+            southbag-code-windows-arm64.zip
           )
 
           for asset in "${binary_assets[@]}"; do
@@ -84,14 +84,14 @@ jobs:
 
           cd "${GITHUB_WORKSPACE}/release-assets"
           release_assets=(
-            pi-darwin-arm64.tar.gz
-            pi-darwin-x64.tar.gz
-            pi-linux-x64.tar.gz
-            pi-linux-arm64.tar.gz
-            pi-windows-x64.zip
-            pi-windows-arm64.zip
-            pi-coding-agent-install-package.json
-            pi-coding-agent-install-package-lock.json
+            southbag-code-darwin-arm64.tar.gz
+            southbag-code-darwin-x64.tar.gz
+            southbag-code-linux-x64.tar.gz
+            southbag-code-linux-arm64.tar.gz
+            southbag-code-windows-x64.zip
+            southbag-code-windows-arm64.zip
+            southbag-code-install-package.json
+            southbag-code-install-package-lock.json
           )
           sha256sum "${release_assets[@]}" > SHA256SUMS
 
@@ -126,14 +126,14 @@ jobs:
           cd release-assets
 
           expected_assets=(
-            pi-darwin-arm64.tar.gz
-            pi-darwin-x64.tar.gz
-            pi-linux-x64.tar.gz
-            pi-linux-arm64.tar.gz
-            pi-windows-x64.zip
-            pi-windows-arm64.zip
-            pi-coding-agent-install-package.json
-            pi-coding-agent-install-package-lock.json
+            southbag-code-darwin-arm64.tar.gz
+            southbag-code-darwin-x64.tar.gz
+            southbag-code-linux-x64.tar.gz
+            southbag-code-linux-arm64.tar.gz
+            southbag-code-windows-x64.zip
+            southbag-code-windows-arm64.zip
+            southbag-code-install-package.json
+            southbag-code-install-package-lock.json
             SHA256SUMS
             RELEASE_NOTES.md
           )
@@ -153,14 +153,14 @@ jobs:
           cd release-assets
 
           release_assets=(
-            pi-darwin-arm64.tar.gz
-            pi-darwin-x64.tar.gz
-            pi-linux-x64.tar.gz
-            pi-linux-arm64.tar.gz
-            pi-windows-x64.zip
-            pi-windows-arm64.zip
-            pi-coding-agent-install-package.json
-            pi-coding-agent-install-package-lock.json
+            southbag-code-darwin-arm64.tar.gz
+            southbag-code-darwin-x64.tar.gz
+            southbag-code-linux-x64.tar.gz
+            southbag-code-linux-arm64.tar.gz
+            southbag-code-windows-x64.zip
+            southbag-code-windows-arm64.zip
+            southbag-code-install-package.json
+            southbag-code-install-package-lock.json
             SHA256SUMS
           )
 
