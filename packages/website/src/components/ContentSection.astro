@@ -1,0 +1,82 @@
+---
+type Props = {
+	id: string;
+	title: string;
+	description: string;
+	variant?: "default" | "closing";
+};
+
+const { id, title, description, variant = "default" } = Astro.props;
+---
+
+<section id={id} class:list={["section", { closing: variant === "closing" }]}>
+	<div class:list={["section-inner", { "closing-inner": variant === "closing" }]}>
+		<div class="section-head">
+			<h2>{title}</h2>
+			<p>{description}</p>
+		</div>
+		<slot />
+	</div>
+</section>
+
+<style>
+	.section {
+		border-top: 1px solid var(--line);
+		background: rgba(6, 6, 6, 0.42);
+	}
+
+	.section-inner {
+		width: min(var(--max), calc(100% - 40px));
+		margin: 0 auto;
+		padding: clamp(64px, 9vw, 116px) 0;
+	}
+
+	.section-head {
+		max-width: 830px;
+		margin-bottom: 38px;
+	}
+
+	h2 {
+		margin: 0;
+		font-size: clamp(34px, 5vw, 70px);
+		line-height: 0.98;
+		font-weight: 720;
+		letter-spacing: -0.035em;
+	}
+
+	p {
+		max-width: 660px;
+		margin: 18px 0 0;
+		color: var(--muted);
+		font-size: clamp(17px, 2vw, 22px);
+		line-height: 1.35;
+	}
+
+	.closing {
+		min-height: 60vh;
+		display: grid;
+		align-items: center;
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, 0.09), transparent 34%),
+			rgba(10, 10, 10, 0.82);
+	}
+
+	.closing-inner {
+		padding: clamp(70px, 10vw, 128px) 0;
+	}
+
+	.closing h2 {
+		max-width: 900px;
+	}
+
+	.closing p {
+		max-width: 620px;
+		margin: 20px 0 0;
+	}
+
+	@media (max-width: 520px) {
+		.section-inner {
+			width: min(100% - 28px, var(--max));
+		}
+	}
+</style>

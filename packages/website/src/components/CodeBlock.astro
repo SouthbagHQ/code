@@ -1,0 +1,91 @@
+---
+type Props = {
+	code: string;
+};
+
+const { code } = Astro.props;
+---
+
+<div class="code-block">
+	<button class="copy-button" type="button" data-copy={code}>Copy</button>
+	<pre><code>{code}</code></pre>
+</div>
+
+<script>
+	const copyButtons = document.querySelectorAll(".copy-button");
+
+	copyButtons.forEach((copyButton) => {
+		copyButton.addEventListener("click", async () => {
+			if (!(copyButton instanceof HTMLButtonElement)) {
+				return;
+			}
+
+			const text = copyButton.dataset.copy || "";
+
+			try {
+				await navigator.clipboard.writeText(text);
+				copyButton.textContent = "Copied";
+			} catch {
+				const textarea = document.createElement("textarea");
+				textarea.value = text;
+				textarea.setAttribute("readonly", "");
+				textarea.style.position = "fixed";
+				textarea.style.opacity = "0";
+				document.body.append(textarea);
+				textarea.select();
+				document.execCommand("copy");
+				textarea.remove();
+				copyButton.textContent = "Copied";
+			}
+
+			window.setTimeout(() => {
+				copyButton.textContent = "Copy";
+			}, 1400);
+		});
+	});
+</script>
+
+<style>
+	.code-block {
+		position: relative;
+		max-width: 650px;
+		margin: 28px 0 0;
+		border: 1px solid var(--line-strong);
+		border-radius: 16px;
+		background: rgba(242, 242, 242, 0.06);
+		overflow: hidden;
+	}
+
+	.code-block pre {
+		margin: 0;
+		padding: 20px 96px 20px 20px;
+		color: var(--ink);
+		font: 600 clamp(15px, 1.7vw, 18px) / 1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		overflow-wrap: anywhere;
+		white-space: pre-wrap;
+	}
+
+	.copy-button {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		min-height: 34px;
+		padding: 7px 12px;
+		border: 1px solid var(--line-strong);
+		border-radius: 999px;
+		color: var(--ink);
+		background: rgba(242, 242, 242, 0.1);
+		font: 700 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		cursor: pointer;
+		transition:
+			background 0.16s ease,
+			border-color 0.16s ease;
+	}
+
+	.copy-button:hover {
+		border-color: rgba(242, 242, 242, 0.42);
+		background: rgba(242, 242, 242, 0.16);
+	}
+</style>
