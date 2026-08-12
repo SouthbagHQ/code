@@ -3,7 +3,7 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 const MODEL = "openai/gpt-5.6-luna";
 const PUBLIC_MODEL = "southbag-agent";
 const CLI_CLIENT_ID = "southbag-code-cli";
-const WEEKLY_LIMIT = 5;
+const WEEKLY_LIMIT = 2;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
