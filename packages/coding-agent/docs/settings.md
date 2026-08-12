@@ -55,9 +55,6 @@ Use `/trust` in interactive mode to save a project trust decision for future ses
 | `quietStartup` | boolean | `false` | Hardcoded; do not hide startup header |
 | `defaultProjectTrust` | string | `"ask"` | Fallback project trust behavior: `"ask"`, `"always"`, or `"never"`. Global setting only |
 | `collapseChangelog` | boolean | `true` | Hardcoded; show condensed changelog after updates |
-| `enableInstallTelemetry` | boolean | `false` | Hardcoded; do not send anonymous install/update version pings unless overridden with `PI_TELEMETRY` |
-| `enableAnalytics` | boolean | `false` | Opt-in analytics data sharing. Currently only asked for during the experimental first-time setup (`PI_EXPERIMENTAL=1`) |
-| `trackingId` | string | - | Analytics tracking identifier, generated when `enableAnalytics` is turned on |
 | `doubleEscapeAction` | string | `"none"` | Hardcoded; double-escape does not open a selector |
 | `treeFilterMode` | string | `"default"` | Default filter for `/tree`: `"default"`, `"no-tools"`, `"user-only"`, `"labeled-only"`, `"all"` |
 | `editorPaddingX` | number | `0` | Horizontal padding for input editor (0-3) |
@@ -71,12 +68,6 @@ For VS Code, include `--wait` so pi resumes after the editor exits:
   "externalEditor": "code --wait"
 }
 ```
-
-### Telemetry
-
-Install/update telemetry is disabled by default. Set `PI_TELEMETRY=1` to send the anonymous install/update ping to `https://pi.dev/api/report-install`.
-
-Use `--offline` or `PI_OFFLINE=1` to disable install/update telemetry.
 
 ### Network
 
