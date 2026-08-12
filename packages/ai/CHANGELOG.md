@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added the signed-in email to stored Southbag OAuth credentials.
+
 ## [0.80.5] - 2026-08-12
 
 ### Added

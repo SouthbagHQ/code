@@ -2421,6 +2421,12 @@ export class InteractiveMode {
 				await this.shutdown();
 				return;
 			}
+			if (text === "/logout") {
+				this.editor.setText("");
+				this.session.modelRegistry.authStorage.remove("opencode");
+				await this.shutdown();
+				return;
+			}
 
 			// Handle bash command (! for normal, !! for excluded from context)
 			if (text.startsWith("!")) {

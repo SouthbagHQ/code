@@ -395,6 +395,7 @@ async function issueTokens(user: User, env: Env, url: URL) {
 		token_type: "Bearer",
 		expires_in: 3600,
 		scope: "openid profile email",
+		email: user.email,
 	};
 }
 
