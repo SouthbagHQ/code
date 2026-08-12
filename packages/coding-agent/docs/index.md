@@ -12,13 +12,7 @@ npm install -g --ignore-scripts @southbag/code
 
 `--ignore-scripts` disables dependency lifecycle scripts during install. Pi does not require install scripts for normal npm installs.
 
-On Linux or macOS, you can also use the installer:
-
-```bash
-curl -fsSL https://pi.dev/install.sh | sh
-```
-
-To uninstall pi itself, use npm for curl and npm installs:
+To uninstall pi itself:
 
 ```bash
 npm uninstall -g @southbag/code

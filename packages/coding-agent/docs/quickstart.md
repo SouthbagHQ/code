@@ -14,10 +14,10 @@ npm install -g --ignore-scripts @southbag/code
 
 ### Uninstall
 
-Use the package manager that installed pi. The curl installer uses npm globally, so curl and npm installs are removed with npm:
+Use the package manager that installed pi:
 
 ```bash
-# curl installer or npm install -g
+# npm
 npm uninstall -g @southbag/code
 
 # pnpm
