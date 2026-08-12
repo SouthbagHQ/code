@@ -15,6 +15,7 @@ type TokenResponse = {
 	access_token?: string;
 	refresh_token?: string;
 	expires_in?: number;
+	email?: string;
 	error?: string;
 	error_description?: string;
 };
@@ -43,6 +44,7 @@ async function tokenRequest(origin: string, body: URLSearchParams): Promise<Sout
 		refresh: data.refresh_token,
 		expires: Date.now() + data.expires_in * 1000 - 60_000,
 		origin,
+		email: data.email,
 	};
 }
 

@@ -127,6 +127,10 @@ export class FooterComponent implements Component {
 		if (sessionName) {
 			pwd = `${pwd} • ${sessionName}`;
 		}
+		const credential = this.session.modelRegistry.authStorage.get("opencode");
+		if (credential?.type === "oauth" && typeof credential.email === "string") {
+			pwd = `${pwd} • ${sanitizeStatusText(credential.email)}`;
+		}
 
 		// Build stats line
 		const statsParts = [];
