@@ -48,6 +48,7 @@ const workflowRows = [
 	</head>
 	<body>
 		<div class="shell">
+			<a class="account" href="/account">Account</a>
 			<main>
 				<section class="hero">
 					<div class="hero-copy">
@@ -136,6 +137,20 @@ const workflowRows = [
 		position: relative;
 		min-height: 100vh;
 		overflow: hidden;
+	}
+
+	.account {
+		position: absolute;
+		top: 28px;
+		right: max(20px, calc((100% - var(--max)) / 2));
+		z-index: 2;
+		padding: 10px 16px;
+		border: 1px solid var(--line-strong);
+		border-radius: 999px;
+		color: var(--ink);
+		font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		text-decoration: none;
+		text-transform: uppercase;
 	}
 
 	main {

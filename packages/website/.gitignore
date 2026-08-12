@@ -1,2 +1,4 @@
 .astro
 dist
+.dev.vars
+.wrangler

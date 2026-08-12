@@ -7,10 +7,7 @@
 		"@southbag/code": "0.80.4"
 	},
 	"overrides": {
-		"rimraf": "6.1.2",
-		"gaxios": {
-			"rimraf": "6.1.2"
-		}
+		"rimraf": "6.1.2"
 	},
 	"engines": {
 		"node": ">=22.19.0"

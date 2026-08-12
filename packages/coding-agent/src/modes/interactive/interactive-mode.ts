@@ -2441,7 +2441,7 @@ export class InteractiveMode {
 				return;
 			}
 			if (text === "/login" || text === "/logout") {
-				this.showStatus('OpenCode is configured automatically with API key "public"');
+				this.showStatus("Account login happens automatically when Southbag Code starts");
 				this.editor.setText("");
 				return;
 			}

@@ -7,8 +7,8 @@ See [AGENTS.md](https://github.com/earendil-works/pi-mono/blob/main/AGENTS.md) f
 ```bash
 git clone https://github.com/earendil-works/pi-mono
 cd pi-mono
-npm install
-npm run build
+bun install
+bun run build
 ```
 
 Run from source:
@@ -36,7 +36,7 @@ Change `name`, `configDir`, and `bin` field for your fork. Affects CLI banner, c
 
 ## Path Resolution
 
-Three execution modes: npm install, standalone binary, tsx from source.
+Three execution modes: package install, standalone binary, tsx from source.
 
 **Always use `src/config.ts`** for package assets:
 

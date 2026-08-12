@@ -42,10 +42,27 @@ import { runMigrations, showDeprecationWarnings } from "./migrations.ts";
 import { InteractiveMode, runPrintMode, runRpcMode } from "./modes/index.ts";
 import { initTheme, stopThemeWatcher } from "./modes/interactive/theme/theme.ts";
 import { handleConfigCommand, handlePackageCommand } from "./package-manager-cli.ts";
+import { openBrowser } from "./utils/open-browser.ts";
 import { isLocalPath, normalizePath, resolvePath } from "./utils/paths.ts";
 import { cleanupWindowsSelfUpdateQuarantine } from "./utils/windows-self-update.ts";
 
 const EXTENSION_LOAD_FAILURE_HINT = 'Hint: Start without extensions using "pi -ne".';
+
+async function ensureSouthbagLogin(authStorage: AuthStorage): Promise<void> {
+	if (authStorage.has("opencode")) return;
+	console.log(chalk.bold("Sign in with your Southbag Code account to continue."));
+	await authStorage.login("opencode", {
+		onAuth: ({ url }) => {
+			console.log(`\n${url}\n`);
+			openBrowser(url);
+		},
+		onDeviceCode: () => {},
+		onPrompt: async () => "",
+		onSelect: async () => undefined,
+		onProgress: (message) => console.log(chalk.dim(message)),
+	});
+	console.log(chalk.green("Signed in.\n"));
+}
 
 /**
  * Read all content from piped stdin.
@@ -532,6 +549,14 @@ export async function main(args: string[], options?: MainOptions) {
 	const resolvedPromptTemplatePaths = resolveCliPaths(cwd, parsed.promptTemplates);
 	const resolvedThemePaths = resolveCliPaths(cwd, parsed.themes);
 	const authStorage = AuthStorage.create();
+	if (!parsed.help) {
+		try {
+			await ensureSouthbagLogin(authStorage);
+		} catch (error) {
+			console.error(chalk.red(`Sign-in failed: ${error instanceof Error ? error.message : String(error)}`));
+			process.exit(1);
+		}
+	}
 	const createRuntime: CreateAgentSessionRuntimeFactory = async ({
 		cwd,
 		agentDir,
@@ -585,7 +610,7 @@ export async function main(args: string[], options?: MainOptions) {
 		if (parsed.apiKey) {
 			diagnostics.push({
 				type: "error",
-				message: '--api-key is not supported. Southbag Code always uses the OpenCode API key "public".',
+				message: "--api-key is not supported. Southbag Code uses account login.",
 			});
 		}
 

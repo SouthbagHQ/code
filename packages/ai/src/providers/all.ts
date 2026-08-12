@@ -14,17 +14,25 @@ export function getBuiltinModel<TProvider extends KnownProvider, TModelId extend
 	provider: TProvider,
 	modelId: TModelId,
 ): Model<BuiltinModelApi<TProvider, TModelId>> {
+	if (provider === "opencode") {
+		return opencodeProvider()
+			.getModels()
+			.find((model) => model.id === modelId) as Model<BuiltinModelApi<TProvider, TModelId>>;
+	}
 	const models = MODELS[provider] as Record<string, Model<Api>> | undefined;
 	return models?.[modelId as string] as Model<BuiltinModelApi<TProvider, TModelId>>;
 }
 
 export function getBuiltinProviders(): KnownProvider[] {
-	return Object.keys(MODELS) as KnownProvider[];
+	return ["opencode"];
 }
 
 export function getBuiltinModels<TProvider extends KnownProvider>(
 	provider: TProvider,
 ): Model<BuiltinModelApi<TProvider, keyof (typeof MODELS)[TProvider]>>[] {
+	if (provider === "opencode") {
+		return opencodeProvider().getModels() as Model<BuiltinModelApi<TProvider, keyof (typeof MODELS)[TProvider]>>[];
+	}
 	const models = MODELS[provider] as Record<string, Model<Api>> | undefined;
 	return models
 		? (Object.values(models) as Model<BuiltinModelApi<TProvider, keyof (typeof MODELS)[TProvider]>>[])

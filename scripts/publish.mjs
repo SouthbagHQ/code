@@ -45,7 +45,7 @@ function readPackageJson(directory) {
 
 function assertBuildOutputExists(directory) {
 	if (!existsSync(join(directory, "dist"))) {
-		throw new Error(`${directory}/dist does not exist. Run npm run build before publishing.`);
+		throw new Error(`${directory}/dist does not exist. Run bun run build before publishing.`);
 	}
 }
 

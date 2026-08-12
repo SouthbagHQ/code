@@ -4,12 +4,18 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "astro dev",
-		"build": "astro build",
-		"preview": "astro preview",
+		"dev": "bunx astro build && bunx wrangler dev --env-file ../../.env --var DEV_AUTH:true",
+		"dev:site": "bunx astro dev",
+		"build": "bunx astro build",
+		"preview": "bunx astro build && bunx wrangler dev --env-file ../../.env --var DEV_AUTH:true",
+		"deploy": "bunx astro build && bunx wrangler deploy",
 		"clean": "shx rm -rf dist .astro"
 	},
+	"dependencies": {
+		"jose": "6.2.8"
+	},
 	"devDependencies": {
-		"astro": "6.3.1"
+		"astro": "6.3.1",
+		"wrangler": "4.120.0"
 	}
 }

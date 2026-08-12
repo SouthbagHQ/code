@@ -20,8 +20,8 @@ function printHelp() {
   node scripts/profile-coding-agent-node.mjs [options]
 
 Profiles coding-agent startup with the runtime selected below:
-- npm run profile:tui     -> builds packages/coding-agent and profiles TUI startup with Node
-- npm run profile:rpc     -> builds packages/coding-agent and profiles RPC startup with Node
+- bun run profile:tui     -> builds packages/coding-agent and profiles TUI startup with Node
+- bun run profile:rpc     -> builds packages/coding-agent and profiles RPC startup with Node
 - bun run profile:tui     -> profiles TUI startup from src/cli.ts directly with Bun
 - bun run profile:rpc     -> profiles RPC startup from src/cli.ts directly with Bun
 

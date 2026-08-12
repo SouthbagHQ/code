@@ -1,0 +1,2 @@
+SESSION_SECRET="replace-with-a-long-random-value"
+OPENROUTER_KEY=""

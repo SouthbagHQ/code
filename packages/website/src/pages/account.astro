@@ -1,0 +1,50 @@
+---
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Usage — Southbag Code</title>
+	</head>
+	<body>
+		<main>
+			<a href="/">Southbag Code</a>
+			<section>
+				<p>Weekly usage</p>
+				<strong id="percent">—</strong>
+				<div class="track"><div id="bar"></div></div>
+				<small id="reset">Loading usage…</small>
+			</section>
+			<a class="logout" href="/auth/logout">Sign out</a>
+		</main>
+		<script>
+			const response = await fetch("/api/usage");
+			if (response.status === 401) location.assign("/auth/login?return_to=/account");
+			else if (response.ok) {
+				const usage = await response.json();
+				const percent = Math.min(100, Math.max(0, usage.percent));
+				document.querySelector("#percent").textContent = `${Math.round(percent)}%`;
+				document.querySelector("#bar").style.width = `${percent}%`;
+				document.querySelector("#reset").textContent = `Resets ${new Date(usage.resetsAt).toLocaleString()}`;
+			}
+		</script>
+	</body>
+</html>
+
+<style>
+	:root { --ink:#f2f2f2; --muted:#b0b0b0; --line:rgba(242,242,242,.18); --lime:#c7f36b; }
+	* { box-sizing:border-box; }
+	body { margin:0; min-width:320px; min-height:100vh; color:var(--ink); background:radial-gradient(circle at 72% 18%,rgba(255,255,255,.09),transparent 28%),linear-gradient(135deg,#0a0a0a,#060606 54%,#020202); font-family:"Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif; }
+	body::before { position:fixed; inset:0; pointer-events:none; content:""; background:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px) 0 0/100% 48px,linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px) 0 0/48px 100%; }
+	main { position:relative; width:min(900px,calc(100% - 40px)); min-height:100vh; margin:auto; padding:48px 0; display:grid; align-content:center; gap:38px; }
+	a { width:max-content; color:var(--ink); font-weight:720; text-decoration:none; }
+	section { padding:clamp(28px,6vw,64px); border:1px solid var(--line); border-radius:24px; background:rgba(242,242,242,.055); }
+	p { margin:0 0 8px; color:var(--muted); font:700 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.08em; text-transform:uppercase; }
+	strong { display:block; margin:0 0 28px; font-size:clamp(72px,16vw,154px); line-height:.9; letter-spacing:-.06em; }
+	.track { height:16px; border:1px solid var(--line); border-radius:999px; overflow:hidden; background:#080808; }
+	.track div { width:0; height:100%; background:var(--lime); transition:width .35s ease; }
+	small { display:block; margin-top:14px; color:var(--muted); }
+	.logout { color:var(--muted); font-size:14px; }
+</style>

@@ -244,7 +244,7 @@ ${chalk.bold("Commands:")}
   ${APP_NAME} <command> --help          Show help for install/remove/uninstall/update/list
 
 ${chalk.bold("Options:")}
-  --api-key <key>                API key (not supported; Southbag Code uses "public")
+  --api-key <key>                API key (not supported; Southbag Code uses account login)
   --system-prompt <text>         System prompt (default: coding assistant prompt)
   --append-system-prompt <text>  Append text or file contents to the system prompt (can be used multiple times)
   --mode <mode>                  Output mode: text (default), json, or rpc

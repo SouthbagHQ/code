@@ -23,7 +23,7 @@
 	"scripts": {
 		"clean": "shx rm -rf dist",
 		"build": "tsgo -p tsconfig.build.json",
-		"prepublishOnly": "npm run clean && npm run build"
+		"prepublishOnly": "bun run clean && bun run build"
 	},
 	"dependencies": {
 		"@southbag/code-ai": "^0.80.4",

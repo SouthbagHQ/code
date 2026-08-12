@@ -23,7 +23,7 @@ isolated directory outside the repository for local release testing.
 Options:
   --out <dir>          Output directory. Defaults to a new directory under ${tmpdir()}
   --force              Remove --out first if it already exists
-  --skip-check         Do not run npm run check before building
+  --skip-check         Do not run bun run check before building
   --skip-install       Only create tarballs; do not create isolated installs
   --skip-bun-install   Do not create the isolated Bun install
   --help               Show this help
@@ -200,12 +200,12 @@ const binaryDirectory = join(outDir, "bun");
 mkdirSync(tarballDirectory, { recursive: true });
 
 if (!options.skipCheck) {
-	run("npm", ["run", "check"], { cwd: repoRoot });
+	run("bun", ["run", "check"], { cwd: repoRoot });
 }
 
 for (const pkg of packages) {
-	run("npm", ["run", "clean"], { cwd: pkg.directory });
-	run("npm", ["run", "build"], { cwd: pkg.directory });
+	run("bun", ["run", "clean"], { cwd: pkg.directory });
+	run("bun", ["run", "build"], { cwd: pkg.directory });
 }
 
 const tarballs = new Map();

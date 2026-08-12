@@ -1,18 +1,23 @@
 import { openAICompletionsApi } from "../api/openai-completions.lazy.ts";
+import { lazyOAuth } from "../auth/helpers.ts";
 import { createProvider, type Provider } from "../models.ts";
+import { loadSouthbagOAuth } from "../utils/oauth/load.ts";
 import { OPENCODE_MODELS } from "./opencode.models.ts";
 
 export function opencodeProvider(): Provider<"openai-completions"> {
 	return createProvider({
 		id: "opencode",
-		name: "OpenCode",
+		name: "Southbag Agent",
 		auth: {
-			apiKey: {
-				name: "OpenCode API key",
-				resolve: async () => ({ auth: { apiKey: "public" }, source: "public" }),
-			},
+			oauth: lazyOAuth({ name: "Southbag Code account", load: loadSouthbagOAuth }),
 		},
-		models: Object.values(OPENCODE_MODELS),
+		models: Object.values(OPENCODE_MODELS).map((model) => ({
+			...model,
+			baseUrl: "https://code.southbag.cc/v1",
+			contextWindow: 1_050_000,
+			maxTokens: 128_000,
+			input: ["text", "image"] as const,
+		})),
 		api: {
 			"openai-completions": openAICompletionsApi(),
 		},

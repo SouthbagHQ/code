@@ -7,9 +7,9 @@
 #   ./scripts/build-binaries.sh [--skip-install] [--skip-deps] [--skip-build] [--platform <platform>] [--out <dir>]
 #
 # Options:
-#   --skip-install      Skip npm ci
+#   --skip-install      Skip bun install
 #   --skip-deps         Skip installing cross-platform dependencies
-#   --skip-build        Skip npm run build
+#   --skip-build        Skip bun run build
 #   --platform <name>   Build only for specified platform (darwin-arm64, darwin-x64, linux-x64, linux-arm64, windows-x64, windows-arm64)
 #   --out <dir>         Output directory (default: packages/coding-agent/binaries)
 #
@@ -85,19 +85,18 @@ fi
 
 if [[ "$SKIP_INSTALL" == "false" ]]; then
     echo "==> Installing dependencies..."
-    npm ci --ignore-scripts
+    bun install --frozen-lockfile --ignore-scripts
 else
-    echo "==> Skipping npm ci (--skip-install)"
+    echo "==> Skipping bun install (--skip-install)"
 fi
 
 if [[ "$SKIP_DEPS" == "false" ]]; then
     echo "==> Installing cross-platform native bindings..."
     CLIPBOARD_VERSION=$(node -p "require('./packages/coding-agent/package.json').optionalDependencies['@mariozechner/clipboard']")
-    # npm ci only installs optional deps for the current platform
+    # Bun only installs optional deps for the current platform
     # We need the base clipboard package and all platform bindings for bun cross-compilation
-    # Use --force to bypass platform checks (os/cpu restrictions in package.json)
-    # Install all in one command to avoid npm removing packages from previous installs
-    npm install --include=optional --no-save --package-lock=false --force --ignore-scripts \
+    # Install all in one command for Bun cross-compilation.
+    bun install --no-save --ignore-scripts --os='*' --cpu='*' \
         @mariozechner/clipboard@"$CLIPBOARD_VERSION" \
         @mariozechner/clipboard-darwin-arm64@"$CLIPBOARD_VERSION" \
         @mariozechner/clipboard-darwin-x64@"$CLIPBOARD_VERSION" \
@@ -111,7 +110,7 @@ fi
 
 if [[ "$SKIP_BUILD" == "false" ]]; then
     echo "==> Building all packages..."
-    npm run build
+    bun run build
 else
     echo "==> Skipping package build (--skip-build)"
 fi

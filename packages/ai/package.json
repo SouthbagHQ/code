@@ -48,7 +48,7 @@
 		"generate-models": "node scripts/generate-models.ts",
 		"generate-image-models": "node scripts/generate-image-models.ts",
 		"build": "tsgo -p tsconfig.build.json",
-		"prepublishOnly": "npm run clean && npm run build"
+		"prepublishOnly": "bun run clean && bun run build"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "0.91.1",

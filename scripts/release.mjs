@@ -8,7 +8,7 @@
  *
  * Steps:
  * 1. Check for uncommitted changes
- * 2. Bump version via npm run version:xxx or set an explicit version
+ * 2. Bump version via bun run version:xxx or set an explicit version
  * 3. Update CHANGELOG.md files: [Unreleased] -> [version] - date
  * 4. Regenerate release artifacts
  * 5. Run checks
@@ -82,7 +82,7 @@ function bumpOrSetVersion(target) {
 
 	if (BUMP_TYPES.has(target)) {
 		console.log(`Bumping version (${target})...`);
-		run(`npm run version:${target}`);
+		run(`bun run version:${target}`);
 		return getVersion();
 	}
 
@@ -92,7 +92,7 @@ function bumpOrSetVersion(target) {
 	}
 
 	console.log(`Setting explicit version (${target})...`);
-	run(`npm version ${target} -ws --no-git-tag-version && node scripts/sync-versions.js && npm install --package-lock-only --ignore-scripts`);
+	run(`npm version ${target} -ws --no-git-tag-version && node scripts/sync-versions.js && npm install --package-lock-only --ignore-scripts && bun install --lockfile-only --ignore-scripts`);
 	return getVersion();
 }
 
@@ -166,15 +166,15 @@ console.log();
 
 // 4. Regenerate release artifacts
 console.log("Regenerating release artifacts...");
-run("npm --prefix packages/ai run generate-models");
-run("npm --prefix packages/ai run generate-image-models");
-run("npm run shrinkwrap:coding-agent");
-run("npm run install-lock:coding-agent");
+run("bun run --cwd packages/ai generate-models");
+run("bun run --cwd packages/ai generate-image-models");
+run("bun run shrinkwrap:coding-agent");
+run("bun run install-lock:coding-agent");
 console.log();
 
 // 5. Run checks
 console.log("Running checks...");
-run("npm run check");
+run("bun run check");
 console.log();
 
 // 6. Commit and tag

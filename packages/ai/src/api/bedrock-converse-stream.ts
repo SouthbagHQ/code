@@ -19,11 +19,11 @@ import {
 	type SystemContentBlock,
 	type ToolChoice,
 	type ToolConfiguration,
+	type ToolInputSchema,
 	type ToolResultContentBlock,
 	ToolResultStatus,
 } from "@aws-sdk/client-bedrock-runtime";
 import { NodeHttpHandler } from "@smithy/node-http-handler";
-import type { BuildMiddleware, DocumentType, MetadataBearer } from "@smithy/types";
 import { HttpProxyAgent } from "http-proxy-agent";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { calculateCost } from "../models.ts";
@@ -359,19 +359,21 @@ function isReservedHeader(key: string): boolean {
  * all other caller headers override any existing same-named header on the request.
  */
 function addCustomHeadersMiddleware(client: BedrockRuntimeClient, headers: Record<string, string>): void {
-	const middleware: BuildMiddleware<object, MetadataBearer> = (next) => async (args) => {
-		const request = args.request;
-		if (request && typeof request === "object" && "headers" in request) {
-			const requestHeaders = (request as { headers: Record<string, string> }).headers;
-			for (const [key, value] of Object.entries(headers)) {
-				if (!isReservedHeader(key)) {
-					requestHeaders[key] = value;
+	client.middlewareStack.add(
+		(next) => async (args) => {
+			const request = args.request;
+			if (request && typeof request === "object" && "headers" in request) {
+				const requestHeaders = (request as { headers: Record<string, string> }).headers;
+				for (const [key, value] of Object.entries(headers)) {
+					if (!isReservedHeader(key)) {
+						requestHeaders[key] = value;
+					}
 				}
 			}
-		}
-		return next(args);
-	};
-	client.middlewareStack.add(middleware, { step: "build", name: "pi-ai-custom-headers", priority: "low" });
+			return next(args);
+		},
+		{ step: "build", name: "pi-ai-custom-headers", priority: "low" },
+	);
 }
 
 export const streamSimple: StreamFunction<"bedrock-converse-stream", SimpleStreamOptions> = (
@@ -895,7 +897,7 @@ function convertToolConfig(
 		toolSpec: {
 			name: tool.name,
 			description: tool.description,
-			inputSchema: { json: tool.parameters as unknown as DocumentType },
+			inputSchema: { json: tool.parameters as unknown as ToolInputSchema.JsonMember["json"] },
 		},
 	}));
 

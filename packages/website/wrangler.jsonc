@@ -1,0 +1,23 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "southbag-code",
+	"account_id": "1044a3131c99356eba069325d3be3788",
+	"compatibility_date": "2026-08-08",
+	"routes": [{ "pattern": "code.southbag.cc/*", "zone_name": "southbag.cc" }],
+	"main": "src/worker.ts",
+	"assets": {
+		"directory": "dist",
+		"binding": "ASSETS",
+		"run_worker_first": ["/account", "/account/*", "/api/*", "/auth/*", "/dev/*", "/oauth/*", "/v1/*"]
+	},
+	"vars": {
+		"ORIGIN": "https://code.southbag.cc",
+		"IDENTITY_ORIGIN": "https://identity.southbag.cc"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "USAGE",
+			"id": "2aba5bda5cb74f929037d4571a601282"
+		}
+	]
+}

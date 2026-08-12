@@ -27,6 +27,7 @@ export {
 	openaiCodexOAuthProvider,
 	refreshOpenAICodexToken,
 } from "./openai-codex.ts";
+export { loginSouthbag, refreshSouthbagToken, southbagOAuthProvider } from "./southbag.ts";
 
 export * from "./types.ts";
 
@@ -34,16 +35,10 @@ export * from "./types.ts";
 // Provider Registry
 // ============================================================================
 
-import { anthropicOAuthProvider } from "./anthropic.ts";
-import { githubCopilotOAuthProvider } from "./github-copilot.ts";
-import { openaiCodexOAuthProvider } from "./openai-codex.ts";
+import { southbagOAuthProvider } from "./southbag.ts";
 import type { OAuthCredentials, OAuthProviderId, OAuthProviderInfo, OAuthProviderInterface } from "./types.ts";
 
-const BUILT_IN_OAUTH_PROVIDERS: OAuthProviderInterface[] = [
-	anthropicOAuthProvider,
-	githubCopilotOAuthProvider,
-	openaiCodexOAuthProvider,
-];
+const BUILT_IN_OAUTH_PROVIDERS: OAuthProviderInterface[] = [southbagOAuthProvider];
 
 const oauthProviderRegistry = new Map<string, OAuthProviderInterface>(
 	BUILT_IN_OAUTH_PROVIDERS.map((provider) => [provider.id, provider]),
