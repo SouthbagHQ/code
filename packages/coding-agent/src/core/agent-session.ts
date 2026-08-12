@@ -903,9 +903,13 @@ export class AgentSession {
 			loaderAppendSystemPrompt.length > 0 ? loaderAppendSystemPrompt.join("\n\n") : undefined;
 		const loadedSkills = this._resourceLoader.getSkills().skills;
 		const loadedContextFiles = this._resourceLoader.getAgentsFiles().agentsFiles;
+		const credential = this._modelRegistry.authStorage.get("opencode");
+		const userEmail =
+			credential?.type === "oauth" && typeof credential.email === "string" ? credential.email : undefined;
 
 		this._baseSystemPromptOptions = {
 			cwd: this._cwd,
+			userEmail,
 			skills: loadedSkills,
 			contextFiles: loadedContextFiles,
 			customPrompt: loaderSystemPrompt,

@@ -2375,7 +2375,7 @@ export class InteractiveMode {
 				this.editor.setText("");
 				return;
 			}
-			if (text === "/login" || text === "/logout") {
+			if (text === "/login") {
 				this.showStatus("Account login happens automatically when Southbag Code starts");
 				this.editor.setText("");
 				return;

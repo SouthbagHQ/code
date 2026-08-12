@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added the signed-in Southbag account email to the footer and a `/logout` command that clears the account credential and exits.
+- Added the signed-in Southbag account email to the footer and agent system prompt, plus a `/logout` command that clears the account credential and exits.
 
 ## [0.80.5] - 2026-08-12
 

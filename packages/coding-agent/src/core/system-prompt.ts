@@ -31,6 +31,8 @@ export interface BuildSystemPromptOptions {
 	skills?: Skill[];
 	/** Pre-loaded computer hardware details. */
 	computerInfo?: ComputerInfo;
+	/** Signed-in Southbag account email. */
+	userEmail?: string;
 }
 
 let cachedComputerInfo: ComputerInfo | undefined;
@@ -95,6 +97,7 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions): string {
 		contextFiles: providedContextFiles,
 		skills: providedSkills,
 		computerInfo: providedComputerInfo,
+		userEmail,
 	} = options;
 	const resolvedCwd = cwd;
 	const promptCwd = resolvedCwd.replace(/\\/g, "/");
@@ -138,6 +141,9 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions): string {
 		// Add date and working directory last
 		prompt += `\nCurrent date: ${date}`;
 		prompt += `\nCurrent working directory: ${promptCwd}`;
+		if (userEmail) {
+			prompt += `\nCurrent user email: ${JSON.stringify(userEmail)}`;
+		}
 		if (computerInfoSection) {
 			prompt += `\n${computerInfoSection}`;
 		}
@@ -268,6 +274,9 @@ ${guidelines}`;
 	// Add date and working directory last
 	prompt += `\nCurrent date: ${date}`;
 	prompt += `\nCurrent working directory: ${promptCwd}`;
+	if (userEmail) {
+		prompt += `\nCurrent user email: ${JSON.stringify(userEmail)}`;
+	}
 	if (computerInfoSection) {
 		prompt += `\n${computerInfoSection}`;
 	}
