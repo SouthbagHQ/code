@@ -9,6 +9,7 @@
 ### Changed
 
 - Removed the interactive `/settings` command and hardcoded settings UI defaults for image blocking, skill commands, thinking visibility, changelog collapse, startup verbosity, telemetry, and double-escape behavior.
+- Removed automatic update detection, update prompts, and the `pi update` command.
 
 ### Fixed
 

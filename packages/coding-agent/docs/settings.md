@@ -17,7 +17,7 @@ Non-interactive modes (`-p`, `--mode json`, and `--mode rpc`) do not show a trus
 
 If no extension or saved decision applies, `defaultProjectTrust` controls the fallback behavior. Set it to `"ask"`, `"always"`, or `"never"` in `~/.pi/agent/settings.json`.
 
-`pi config` and package commands use the same project trust flow, except `pi update` never prompts. Pass `--approve` to trust project-local settings for one command or `--no-approve` to ignore them.
+`pi config` and package commands use the same project trust flow. Pass `--approve` to trust project-local settings for one command or `--no-approve` to ignore them.
 
 Use `/trust` in interactive mode to save a project trust decision for future sessions, including trust for the immediate parent folder. It writes `~/.pi/agent/trust.json` only; the current session is not reloaded, so restart pi for changes to take effect.
 
@@ -72,11 +72,11 @@ For VS Code, include `--wait` so pi resumes after the editor exits:
 }
 ```
 
-### Telemetry and update checks
+### Telemetry
 
-Install/update telemetry is disabled by default. Set `PI_TELEMETRY=1` to send the anonymous install/update ping to `https://pi.dev/api/report-install`. Disabling telemetry does not disable update checks; Pi can still fetch `https://pi.dev/api/latest-version` to look for the latest version.
+Install/update telemetry is disabled by default. Set `PI_TELEMETRY=1` to send the anonymous install/update ping to `https://pi.dev/api/report-install`.
 
-Set `PI_SKIP_VERSION_CHECK=1` to disable the Pi version update check. Use `--offline` or `PI_OFFLINE=1` to disable all startup network operations described here, including update checks, package update checks, and install/update telemetry.
+Use `--offline` or `PI_OFFLINE=1` to disable install/update telemetry.
 
 ### Network
 
