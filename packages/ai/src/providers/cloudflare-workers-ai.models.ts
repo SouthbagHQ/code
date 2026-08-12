@@ -236,6 +236,6 @@ export const CLOUDFLARE_WORKERS_AI_MODELS = {
 			cacheWrite: 0,
 		},
 		contextWindow: 262144,
-		maxTokens: 262144,
+		maxTokens: 256000,
 	} satisfies Model<"openai-completions">,
 } as const;

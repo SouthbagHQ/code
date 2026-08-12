@@ -1599,8 +1599,15 @@ async function generateModels() {
 	// Combine models (models.dev has priority)
 	const allModels = [...modelsDevModels, ...openRouterModels, ...aiGatewayModels].filter(
 		(model) =>
+			(model.provider !== "opencode" || model.id === "big-pickle") &&
+			(model.provider !== "opencode-go" || model.api === "anthropic-messages" || model.api === "openai-completions") &&
 			!((model.provider === "opencode" || model.provider === "opencode-go") && model.id === "gpt-5.3-codex-spark"),
 	);
+	const southbagAgent = allModels.find((model) => model.provider === "opencode" && model.id === "big-pickle");
+	if (southbagAgent) {
+		southbagAgent.name = "Southbag Agent";
+		southbagAgent.compat = { ...southbagAgent.compat, supportsLongCacheRetention: false };
+	}
 
 	// Fix incorrect cache pricing for Claude Opus 4.5 from models.dev
 	// models.dev has 3x the correct pricing (1.5/18.75 instead of 0.5/6.25)

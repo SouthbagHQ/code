@@ -1,6 +1,6 @@
 {
 	"name": "@southbag/code-website",
-	"version": "0.80.4",
+	"version": "0.80.5",
 	"private": true,
 	"type": "module",
 	"scripts": {
