@@ -1,6 +1,6 @@
 {
 	"name": "@southbag/code-tui",
-	"version": "0.80.5",
+	"version": "0.80.6",
 	"description": "Southbag Code terminal UI library",
 	"type": "module",
 	"main": "dist/index.js",
