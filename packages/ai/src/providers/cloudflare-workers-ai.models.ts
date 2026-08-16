@@ -4,6 +4,44 @@
 import type { Model } from "../types.ts";
 
 export const CLOUDFLARE_WORKERS_AI_MODELS = {
+	"@cf/deepseek-ai/deepseek-v4-flash-0731": {
+		id: "@cf/deepseek-ai/deepseek-v4-flash-0731",
+		name: "DeepSeek V4 Flash 0731",
+		api: "openai-completions",
+		provider: "cloudflare-workers-ai",
+		baseUrl: "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsLongCacheRetention":false,"sendSessionAffinityHeaders":true,"requiresReasoningContentOnAssistantMessages":true,"thinkingFormat":"deepseek"},
+		reasoning: true,
+		thinkingLevelMap: {"minimal":null,"low":null,"medium":null,"high":"high","xhigh":"max"},
+		input: ["text"],
+		cost: {
+			input: 0.44,
+			output: 1.32,
+			cacheRead: 0.014,
+			cacheWrite: 0,
+		},
+		contextWindow: 1048576,
+		maxTokens: 1048576,
+	} satisfies Model<"openai-completions">,
+	"@cf/deepseek-ai/deepseek-v4-pro-0813": {
+		id: "@cf/deepseek-ai/deepseek-v4-pro-0813",
+		name: "DeepSeek V4 Pro 0813",
+		api: "openai-completions",
+		provider: "cloudflare-workers-ai",
+		baseUrl: "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/v1",
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"supportsLongCacheRetention":false,"sendSessionAffinityHeaders":true,"requiresReasoningContentOnAssistantMessages":true,"thinkingFormat":"deepseek"},
+		reasoning: true,
+		thinkingLevelMap: {"minimal":null,"low":null,"medium":null,"high":"high","xhigh":"max"},
+		input: ["text"],
+		cost: {
+			input: 1.32,
+			output: 3.96,
+			cacheRead: 0.044,
+			cacheWrite: 0,
+		},
+		contextWindow: 1048576,
+		maxTokens: 1048576,
+	} satisfies Model<"openai-completions">,
 	"@cf/google/gemma-4-26b-a4b-it": {
 		id: "@cf/google/gemma-4-26b-a4b-it",
 		name: "Gemma 4 26B A4B IT",

@@ -190,7 +190,9 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions): string {
 	// Always include these
 	addGuideline("Be concise in your responses");
 	addGuideline("Show file paths clearly when working with files");
-	addGuideline('When committing changes, add "Co-authored-by: Southbag Agent <agent@southbag.cc>" to the commit message');
+	addGuideline(
+		'When committing changes, add "Co-authored-by: Southbag Agent <agent@southbag.cc>" to the commit message',
+	);
 
 	const guidelines = guidelinesList.map((g) => `- ${g}`).join("\n");
 

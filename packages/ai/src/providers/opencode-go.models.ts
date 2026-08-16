@@ -25,7 +25,7 @@ export const OPENCODE_GO_MODELS = {
 	} satisfies Model<"openai-completions">,
 	"deepseek-v4-pro": {
 		id: "deepseek-v4-pro",
-		name: "DeepSeek V4 Pro",
+		name: "DeepSeek V4 Pro (New)",
 		api: "openai-completions",
 		provider: "opencode-go",
 		baseUrl: "https://opencode.ai/zen/go/v1",
@@ -69,6 +69,24 @@ export const OPENCODE_GO_MODELS = {
 		compat: {"supportsStore":false,"supportsDeveloperRole":false,"maxTokensField":"max_tokens"},
 		reasoning: true,
 		thinkingLevelMap: {"off":null,"minimal":null,"low":null,"medium":null,"high":"high","xhigh":"max"},
+		input: ["text"],
+		cost: {
+			input: 1.4,
+			output: 4.4,
+			cacheRead: 0.26,
+			cacheWrite: 0,
+		},
+		contextWindow: 1000000,
+		maxTokens: 131072,
+	} satisfies Model<"openai-completions">,
+	"glm-5.3": {
+		id: "glm-5.3",
+		name: "GLM-5.3",
+		api: "openai-completions",
+		provider: "opencode-go",
+		baseUrl: "https://opencode.ai/zen/go/v1",
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"maxTokensField":"max_tokens"},
+		reasoning: true,
 		input: ["text"],
 		cost: {
 			input: 1.4,
