@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Breaking Changes
+
+- Removed the `--system-prompt` CLI flag. Use `SYSTEM.md` to replace the default system prompt.
+
 ## [0.80.7] - 2026-08-12
 
 ### Added

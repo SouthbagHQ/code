@@ -219,7 +219,6 @@ pi --no-extensions -e ./my-extension.ts
 
 | Option | Description |
 |--------|-------------|
-| `--system-prompt <text>` | Replace default prompt; context files and skills are still appended |
 | `--append-system-prompt <text>` | Append to system prompt |
 | `--verbose` | Force verbose startup |
 | `-a`, `--approve` | Trust project-local files for this run |

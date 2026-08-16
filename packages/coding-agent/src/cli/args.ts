@@ -11,7 +11,6 @@ export type Mode = "text" | "json" | "rpc";
 
 export interface Args {
 	apiKey?: string;
-	systemPrompt?: string;
 	appendSystemPrompt?: string[];
 	thinking?: ThinkingLevel;
 	continue?: boolean;
@@ -95,8 +94,6 @@ export function parseArgs(args: string[]): Args {
 			});
 		} else if (arg === "--api-key" && i + 1 < args.length) {
 			result.apiKey = args[++i];
-		} else if (arg === "--system-prompt" && i + 1 < args.length) {
-			result.systemPrompt = args[++i];
 		} else if (arg === "--append-system-prompt" && i + 1 < args.length) {
 			result.appendSystemPrompt = result.appendSystemPrompt ?? [];
 			result.appendSystemPrompt.push(args[++i]);
@@ -244,7 +241,6 @@ ${chalk.bold("Commands:")}
 
 ${chalk.bold("Options:")}
   --api-key <key>                API key (not supported; Southbag Code uses account login)
-  --system-prompt <text>         System prompt (default: coding assistant prompt)
   --append-system-prompt <text>  Append text or file contents to the system prompt (can be used multiple times)
   --mode <mode>                  Output mode: text (default), json, or rpc
   --print, -p                    Non-interactive mode: process prompt and exit
