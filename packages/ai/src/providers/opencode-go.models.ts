@@ -6,7 +6,7 @@ import type { Model } from "../types.ts";
 export const OPENCODE_GO_MODELS = {
 	"deepseek-v4-flash": {
 		id: "deepseek-v4-flash",
-		name: "DeepSeek V4 Flash (2x usage)",
+		name: "DeepSeek V4 Flash",
 		api: "openai-completions",
 		provider: "opencode-go",
 		baseUrl: "https://opencode.ai/zen/go/v1",
@@ -15,9 +15,9 @@ export const OPENCODE_GO_MODELS = {
 		thinkingLevelMap: {"minimal":null,"low":null,"medium":null,"high":"high","xhigh":"max"},
 		input: ["text"],
 		cost: {
-			input: 0.07,
-			output: 0.14,
-			cacheRead: 0.0014,
+			input: 0.14,
+			output: 0.28,
+			cacheRead: 0.0028,
 			cacheWrite: 0,
 		},
 		contextWindow: 1000000,
@@ -262,9 +262,10 @@ export const OPENCODE_GO_MODELS = {
 	"qwen3.7-max": {
 		id: "qwen3.7-max",
 		name: "Qwen3.7 Max",
-		api: "anthropic-messages",
+		api: "openai-completions",
 		provider: "opencode-go",
-		baseUrl: "https://opencode.ai/zen/go",
+		baseUrl: "https://opencode.ai/zen/go/v1",
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"maxTokensField":"max_tokens"},
 		reasoning: true,
 		input: ["text"],
 		cost: {
@@ -275,13 +276,14 @@ export const OPENCODE_GO_MODELS = {
 		},
 		contextWindow: 1000000,
 		maxTokens: 65536,
-	} satisfies Model<"anthropic-messages">,
+	} satisfies Model<"openai-completions">,
 	"qwen3.7-plus": {
 		id: "qwen3.7-plus",
 		name: "Qwen3.7 Plus",
-		api: "anthropic-messages",
+		api: "openai-completions",
 		provider: "opencode-go",
-		baseUrl: "https://opencode.ai/zen/go",
+		baseUrl: "https://opencode.ai/zen/go/v1",
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"maxTokensField":"max_tokens"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -292,13 +294,14 @@ export const OPENCODE_GO_MODELS = {
 		},
 		contextWindow: 1000000,
 		maxTokens: 65536,
-	} satisfies Model<"anthropic-messages">,
+	} satisfies Model<"openai-completions">,
 	"qwen3.8-max": {
 		id: "qwen3.8-max",
 		name: "Qwen3.8 Max",
-		api: "anthropic-messages",
+		api: "openai-completions",
 		provider: "opencode-go",
-		baseUrl: "https://opencode.ai/zen/go",
+		baseUrl: "https://opencode.ai/zen/go/v1",
+		compat: {"supportsStore":false,"supportsDeveloperRole":false,"maxTokensField":"max_tokens"},
 		reasoning: true,
 		input: ["text", "image"],
 		cost: {
@@ -309,5 +312,5 @@ export const OPENCODE_GO_MODELS = {
 		},
 		contextWindow: 1000000,
 		maxTokens: 131072,
-	} satisfies Model<"anthropic-messages">,
+	} satisfies Model<"openai-completions">,
 } as const;
