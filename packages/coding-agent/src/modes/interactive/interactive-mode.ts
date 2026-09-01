@@ -2423,7 +2423,7 @@ export class InteractiveMode {
 			}
 			if (text === "/logout") {
 				this.editor.setText("");
-				this.session.modelRegistry.authStorage.remove("opencode");
+				this.session.modelRegistry.authStorage.remove("southbag-agent");
 				await this.shutdown();
 				return;
 			}

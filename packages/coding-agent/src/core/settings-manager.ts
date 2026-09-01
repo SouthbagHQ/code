@@ -663,11 +663,11 @@ export class SettingsManager {
 	}
 
 	getDefaultProvider(): string | undefined {
-		return "opencode";
+		return "southbag-agent";
 	}
 
 	getDefaultModel(): string | undefined {
-		return "big-pickle";
+		return "southbag-agent";
 	}
 
 	setDefaultProvider(provider: string): void {

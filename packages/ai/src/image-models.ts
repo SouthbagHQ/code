@@ -3,7 +3,9 @@ import type { ImagesApi, ImagesModel, KnownImagesProvider } from "./types.ts";
 
 const imageModelRegistry: Map<string, Map<string, ImagesModel<ImagesApi>>> = new Map();
 
-for (const [provider, models] of Object.entries(IMAGE_MODELS)) {
+for (const [provider, models] of Object.entries(IMAGE_MODELS) as Array<
+	[string, Record<string, ImagesModel<ImagesApi>>]
+>) {
 	const providerModels = new Map<string, ImagesModel<ImagesApi>>();
 	for (const [id, model] of Object.entries(models)) {
 		providerModels.set(id, model as ImagesModel<ImagesApi>);

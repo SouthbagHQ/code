@@ -1,7 +1,7 @@
 import type { Api, Model, ProviderHeaders } from "@southbag/code-ai";
 import type { SettingsManager } from "./settings-manager.ts";
 
-const OPENCODE_HOST = "opencode.ai";
+const SOUTHBAG_HOST = "code.southbag.cc";
 
 function matchesHost(baseUrl: string, expectedHost: string): boolean {
 	try {
@@ -22,7 +22,7 @@ function getDefaultAttributionHeaders(
 
 function getSessionHeaders(model: Model<Api>, sessionId: string | undefined): Record<string, string> | undefined {
 	if (!sessionId) return undefined;
-	if (model.provider !== "opencode" && !matchesHost(model.baseUrl, OPENCODE_HOST)) {
+	if (model.provider !== "southbag-agent" && !matchesHost(model.baseUrl, SOUTHBAG_HOST)) {
 		return undefined;
 	}
 	return { "x-opencode-session": sessionId, "x-opencode-client": "southbag-code" };

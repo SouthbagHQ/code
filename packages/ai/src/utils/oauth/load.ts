@@ -11,14 +11,5 @@ const importOAuthModule = (specifier: string): Promise<unknown> => {
 	return import(runtimeSpecifier);
 };
 
-export const loadAnthropicOAuth = async (): Promise<OAuthAuth> =>
-	((await importOAuthModule("./anthropic.ts")) as { anthropicOAuth: OAuthAuth }).anthropicOAuth;
-
-export const loadOpenAICodexOAuth = async (): Promise<OAuthAuth> =>
-	((await importOAuthModule("./openai-codex.ts")) as { openaiCodexOAuth: OAuthAuth }).openaiCodexOAuth;
-
-export const loadGitHubCopilotOAuth = async (): Promise<OAuthAuth> =>
-	((await importOAuthModule("./github-copilot.ts")) as { githubCopilotOAuth: OAuthAuth }).githubCopilotOAuth;
-
 export const loadSouthbagOAuth = async (): Promise<OAuthAuth> =>
 	((await importOAuthModule("./southbag.ts")) as { southbagOAuth: OAuthAuth }).southbagOAuth;

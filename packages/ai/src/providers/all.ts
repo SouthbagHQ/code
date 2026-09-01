@@ -2,7 +2,7 @@ import { createImagesModels, type ImagesProvider, type MutableImagesModels } fro
 import { MODELS } from "../models.generated.ts";
 import { type CreateModelsOptions, createModels, type MutableModels, type Provider } from "../models.ts";
 import type { Api, KnownProvider, Model } from "../types.ts";
-import { opencodeProvider } from "./opencode.ts";
+import { southbagAgentProvider } from "./southbag-agent.ts";
 
 type BuiltinModelApi<
 	TProvider extends KnownProvider,
@@ -14,8 +14,8 @@ export function getBuiltinModel<TProvider extends KnownProvider, TModelId extend
 	provider: TProvider,
 	modelId: TModelId,
 ): Model<BuiltinModelApi<TProvider, TModelId>> {
-	if (provider === "opencode") {
-		return opencodeProvider()
+	if (provider === "southbag-agent") {
+		return southbagAgentProvider()
 			.getModels()
 			.find((model) => model.id === modelId) as Model<BuiltinModelApi<TProvider, TModelId>>;
 	}
@@ -24,14 +24,16 @@ export function getBuiltinModel<TProvider extends KnownProvider, TModelId extend
 }
 
 export function getBuiltinProviders(): KnownProvider[] {
-	return ["opencode"];
+	return ["southbag-agent"];
 }
 
 export function getBuiltinModels<TProvider extends KnownProvider>(
 	provider: TProvider,
 ): Model<BuiltinModelApi<TProvider, keyof (typeof MODELS)[TProvider]>>[] {
-	if (provider === "opencode") {
-		return opencodeProvider().getModels() as Model<BuiltinModelApi<TProvider, keyof (typeof MODELS)[TProvider]>>[];
+	if (provider === "southbag-agent") {
+		return southbagAgentProvider().getModels() as Model<
+			BuiltinModelApi<TProvider, keyof (typeof MODELS)[TProvider]>
+		>[];
 	}
 	const models = MODELS[provider] as Record<string, Model<Api>> | undefined;
 	return models
@@ -41,7 +43,7 @@ export function getBuiltinModels<TProvider extends KnownProvider>(
 
 /** All built-in providers, freshly constructed. */
 export function builtinProviders(): Provider[] {
-	return [opencodeProvider()];
+	return [southbagAgentProvider()];
 }
 
 /** A `Models` collection with every built-in provider registered. */

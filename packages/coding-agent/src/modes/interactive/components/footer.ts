@@ -127,7 +127,7 @@ export class FooterComponent implements Component {
 		if (sessionName) {
 			pwd = `${pwd} • ${sessionName}`;
 		}
-		const credential = this.session.modelRegistry.authStorage.get("opencode");
+		const credential = this.session.modelRegistry.authStorage.get("southbag-agent");
 		if (credential?.type === "oauth" && typeof credential.email === "string") {
 			pwd = `${pwd} • ${sanitizeStatusText(credential.email)}`;
 		}

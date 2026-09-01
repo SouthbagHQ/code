@@ -48,9 +48,9 @@ import { isLocalPath, normalizePath, resolvePath } from "./utils/paths.ts";
 const EXTENSION_LOAD_FAILURE_HINT = 'Hint: Start without extensions using "pi -ne".';
 
 async function ensureSouthbagLogin(authStorage: AuthStorage): Promise<void> {
-	if (authStorage.has("opencode")) return;
+	if (authStorage.has("southbag-agent")) return;
 	console.log(chalk.bold("Sign in with your Southbag Code account to continue."));
-	await authStorage.login("opencode", {
+	await authStorage.login("southbag-agent", {
 		onAuth: ({ url }) => {
 			console.log(`\n${url}\n`);
 			openBrowser(url);

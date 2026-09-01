@@ -12,7 +12,7 @@ import type { ModelRegistry } from "./model-registry.ts";
 
 /** Default model IDs for each known provider */
 export const defaultModelPerProvider: Partial<Record<KnownProvider, string>> = {
-	opencode: "big-pickle",
+	"southbag-agent": "southbag-agent",
 };
 
 export interface ScopedModel {

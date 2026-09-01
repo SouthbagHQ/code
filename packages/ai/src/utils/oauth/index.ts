@@ -1,32 +1,3 @@
-/**
- * OAuth credential management for AI providers.
- *
- * This module handles login, token refresh, and credential storage
- * for OAuth-based providers:
- * - Anthropic (Claude Pro/Max)
- * - GitHub Copilot
- */
-
-// Anthropic
-export { anthropicOAuthProvider, loginAnthropic, refreshAnthropicToken } from "./anthropic.ts";
-export * from "./device-code.ts";
-// GitHub Copilot
-export {
-	getGitHubCopilotBaseUrl,
-	githubCopilotOAuthProvider,
-	loginGitHubCopilot,
-	normalizeDomain,
-	refreshGitHubCopilotToken,
-} from "./github-copilot.ts";
-// OpenAI Codex (ChatGPT OAuth)
-export {
-	loginOpenAICodex,
-	loginOpenAICodexDeviceCode,
-	OPENAI_CODEX_BROWSER_LOGIN_METHOD,
-	OPENAI_CODEX_DEVICE_CODE_LOGIN_METHOD,
-	openaiCodexOAuthProvider,
-	refreshOpenAICodexToken,
-} from "./openai-codex.ts";
 export { loginSouthbag, refreshSouthbagToken, southbagOAuthProvider } from "./southbag.ts";
 
 export * from "./types.ts";

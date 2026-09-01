@@ -133,7 +133,7 @@ export function refreshSouthbagToken(credentials: SouthbagCredentials) {
 
 const modifyModels = (models: Model<string>[], credentials: SouthbagCredentials) =>
 	models.map((model) =>
-		model.provider === "opencode" ? { ...model, baseUrl: `${serviceOrigin(credentials)}/v1` } : model,
+		model.provider === "southbag-agent" ? { ...model, baseUrl: `${serviceOrigin(credentials)}/v1` } : model,
 	);
 
 export const southbagOAuth: OAuthAuth = {
@@ -161,7 +161,7 @@ export const southbagOAuth: OAuthAuth = {
 };
 
 export const southbagOAuthProvider: OAuthProviderInterface = {
-	id: "opencode",
+	id: "southbag-agent",
 	name: "Southbag Code account",
 	usesCallbackServer: true,
 	login: loginSouthbag,
