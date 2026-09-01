@@ -1,6 +1,6 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-const MODEL = "openai/gpt-5.6-luna";
+const MODEL = "z-ai/glm-5.3-flash";
 const PUBLIC_MODEL = "southbag-agent";
 const CLI_CLIENT_ID = "southbag-code-cli";
 const WEEKLY_LIMIT = 2;
@@ -469,7 +469,7 @@ function sanitizeValue(value: unknown): unknown {
 	if (Array.isArray(value)) return value.map(sanitizeValue);
 	if (!value || typeof value !== "object") {
 		return typeof value === "string"
-			? value.replaceAll(MODEL, "Southbag Agent").replaceAll("GPT-5.6 Luna", "Southbag Agent")
+			? value.replaceAll(MODEL, "Southbag Agent").replaceAll("GLM 5.3 Flash", "Southbag Agent")
 			: value;
 	}
 	const result: Record<string, unknown> = {};
@@ -500,7 +500,7 @@ function sanitizeLine(line: string) {
 	try {
 		return `data: ${JSON.stringify(sanitizeValue(JSON.parse(line.slice(6))))}`;
 	} catch {
-		return line.replaceAll(MODEL, "Southbag Agent").replaceAll("GPT-5.6 Luna", "Southbag Agent");
+		return line.replaceAll(MODEL, "Southbag Agent").replaceAll("GLM 5.3 Flash", "Southbag Agent");
 	}
 }
 
