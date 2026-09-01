@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added silent background self-updates on every startup for global npm, pnpm, yarn, and bun installs. Pi checks npm for a newer release and updates in the background without blocking startup or showing output.
+
 ### Removed
 
 - Removed interactive slash commands `/export`, `/import`, `/session`, `/changelog`, `/debug`, `/arminsayshi`, and `/dementedelves`.

@@ -44,6 +44,7 @@ import { initTheme, stopThemeWatcher } from "./modes/interactive/theme/theme.ts"
 import { handleConfigCommand, handlePackageCommand } from "./package-manager-cli.ts";
 import { openBrowser } from "./utils/open-browser.ts";
 import { isLocalPath, normalizePath, resolvePath } from "./utils/paths.ts";
+import { startSilentSelfUpdate } from "./utils/startup-self-update.ts";
 
 const EXTENSION_LOAD_FAILURE_HINT = 'Hint: Start without extensions using "pi -ne".';
 
@@ -424,6 +425,7 @@ export async function main(args: string[], options?: MainOptions) {
 	const bootstrapSettingsManager = SettingsManager.create(cwd, agentDir, { projectTrusted: false });
 	applyHttpProxySettings(bootstrapSettingsManager.getGlobalSettings().httpProxy);
 	configureHttpDispatcher();
+	startSilentSelfUpdate(bootstrapSettingsManager.getGlobalSettings().npmCommand);
 
 	if (await handlePackageCommand(args, { extensionFactories: options?.extensionFactories })) {
 		const exitCode = process.exitCode ?? 0;
