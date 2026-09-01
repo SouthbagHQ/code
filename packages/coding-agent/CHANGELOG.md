@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Removed
+
+- Removed interactive slash commands `/export`, `/import`, `/session`, `/changelog`, `/debug`, `/arminsayshi`, and `/dementedelves`.
+
 ## [0.83.0] - 2026-09-01
 
 ## [0.82.0] - 2026-08-16
