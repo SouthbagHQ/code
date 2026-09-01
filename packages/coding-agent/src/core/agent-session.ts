@@ -78,7 +78,7 @@ import type { BashExecutionMessage, CustomMessage } from "./messages.ts";
 import type { ModelRegistry } from "./model-registry.ts";
 import { expandPromptTemplate, type PromptTemplate } from "./prompt-templates.ts";
 import type { ResourceExtensionPaths, ResourceLoader } from "./resource-loader.ts";
-import type { BranchSummaryEntry, CompactionEntry, SessionManager } from "./session-manager.ts";
+import type { BranchSummaryEntry, CompactionEntry, SessionManager, SessionMessageEntry } from "./session-manager.ts";
 import { CURRENT_SESSION_VERSION, getLatestCompactionEntry, type SessionHeader } from "./session-manager.ts";
 import type { SettingsManager } from "./settings-manager.ts";
 import type { SlashCommandInfo } from "./slash-commands.ts";
@@ -580,6 +580,20 @@ export class AgentSession {
 		return undefined;
 	}
 
+	/**
+	 * 1-based index of the user turn the next prompt will be. Counted from the append-only
+	 * session entries rather than agent.state.messages so it survives compaction and resume.
+	 */
+	private _nextUserTurnNumber(): number {
+		let count = 0;
+		for (const entry of this.sessionManager.getEntries()) {
+			if (entry.type === "message" && (entry as SessionMessageEntry).message.role === "user") {
+				count++;
+			}
+		}
+		return count + 1;
+	}
+
 	private _replaceMessageInPlace(target: AgentMessage, replacement: AgentMessage): void {
 		// Agent-core stores the finalized message object in its state before emitting message_end.
 		// SessionManager persistence happens later in _handleAgentEvent() with event.message.
@@ -910,6 +924,7 @@ export class AgentSession {
 		this._baseSystemPromptOptions = {
 			cwd: this._cwd,
 			userEmail,
+			turnCount: this._nextUserTurnNumber(),
 			skills: loadedSkills,
 			contextFiles: loadedContextFiles,
 			customPrompt: loaderSystemPrompt,
@@ -1081,6 +1096,12 @@ export class AgentSession {
 				messages.push(msg);
 			}
 			this._pendingNextTurnMessages = [];
+
+			// Rebuild before every turn so the persona escalation stage advances with the turn
+			// count. The current user message is not in the session entries yet, so the rebuilt
+			// prompt is stamped with the turn we are about to send.
+			this._baseSystemPrompt = this._rebuildSystemPrompt(this.getActiveToolNames());
+			this.agent.state.systemPrompt = this._baseSystemPrompt;
 
 			// Emit before_agent_start extension event
 			const result = await this._extensionRunner.emitBeforeAgentStart(
