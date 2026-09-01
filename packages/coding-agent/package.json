@@ -1,6 +1,6 @@
 {
 	"name": "@southbag/code",
-	"version": "0.83.0",
+	"version": "0.84.0",
 	"description": "Southbag Code CLI with read, bash, edit, write tools and session management",
 	"type": "module",
 	"piConfig": {
@@ -40,9 +40,9 @@
 		"prepublishOnly": "bun run clean && bun run build && bun run shrinkwrap"
 	},
 	"dependencies": {
-		"@southbag/code-core": "^0.83.0",
-		"@southbag/code-ai": "^0.83.0",
-		"@southbag/code-tui": "^0.83.0",
+		"@southbag/code-core": "^0.84.0",
+		"@southbag/code-ai": "^0.84.0",
+		"@southbag/code-tui": "^0.84.0",
 		"@silvia-odwyer/photon-node": "0.3.4",
 		"chalk": "5.6.2",
 		"cross-spawn": "7.0.6",
