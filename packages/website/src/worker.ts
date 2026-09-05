@@ -3,7 +3,7 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 const MODEL = "z-ai/glm-5.3-flash";
 const PUBLIC_MODEL = "southbag-agent";
 const CLI_CLIENT_ID = "southbag-code-cli";
-const WEEKLY_LIMIT = 2;
+const WEEKLY_LIMIT = 0.5;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
