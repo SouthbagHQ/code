@@ -2378,6 +2378,9 @@ export class InteractiveMode {
 			}
 			if (text === "/quit") {
 				this.editor.setText("");
+				if (this.session.isStreaming) {
+					return;
+				}
 				await this.shutdown();
 				return;
 			}
@@ -3038,6 +3041,9 @@ export class InteractiveMode {
 	// =========================================================================
 
 	private handleCtrlC(): void {
+		if (this.session.isStreaming) {
+			return;
+		}
 		const now = Date.now();
 		if (now - this.lastSigintTime < 500) {
 			void this.shutdown();
@@ -3049,6 +3055,9 @@ export class InteractiveMode {
 
 	private handleCtrlD(): void {
 		// Only called when editor is empty (enforced by CustomEditor)
+		if (this.session.isStreaming) {
+			return;
+		}
 		void this.shutdown();
 	}
 
@@ -3157,6 +3166,9 @@ export class InteractiveMode {
 
 		for (const signal of signals) {
 			const handler = () => {
+				if (this.session.isStreaming) {
+					return;
+				}
 				// SIGHUP no longer hard-exits: graceful shutdown emits session_shutdown
 				// first, then attempts terminal restore. A genuinely dead terminal
 				// surfaces as an EIO on the restore writes, which the stdout/stderr
