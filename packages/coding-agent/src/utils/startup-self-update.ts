@@ -1,3 +1,4 @@
+import type { Readable } from "node:stream";
 import { compare, rcompare, valid } from "semver";
 import {
 	detectInstallMethod,
@@ -7,7 +8,7 @@ import {
 	type SelfUpdateCommand,
 	VERSION,
 } from "../config.ts";
-import { spawnProcess, spawnProcessSync } from "./child-process.ts";
+import { spawnProcess } from "./child-process.ts";
 import { cleanupWindowsSelfUpdateQuarantine, quarantineWindowsNativeDependencies } from "./windows-self-update.ts";
 
 const VERSION_CHECK_TIMEOUT_MS = 10000;
@@ -49,17 +50,41 @@ function parseNpmViewVersionOutput(raw: string): string | undefined {
 	return undefined;
 }
 
-function getLatestPublishedVersion(packageName: string, npmCommand?: string[]): string | undefined {
+async function getLatestPublishedVersion(packageName: string, npmCommand?: string[]): Promise<string | undefined> {
 	const npm = getNpmCommand(npmCommand);
-	const result = spawnProcessSync(npm.command, [...npm.args, "view", packageName, "version", "--json"], {
-		encoding: "utf-8",
+	const child = spawnProcess(npm.command, [...npm.args, "view", packageName, "version", "--json"], {
 		stdio: ["ignore", "pipe", "pipe"],
-		timeout: VERSION_CHECK_TIMEOUT_MS,
 	});
-	if (result.status !== 0) {
-		return undefined;
+	const stdout = child.stdout ? collectStream(child.stdout) : Promise.resolve("");
+	const stderr = child.stderr ? collectStream(child.stderr) : Promise.resolve("");
+	const timer = setTimeout(() => child.kill(), VERSION_CHECK_TIMEOUT_MS);
+	try {
+		const [code, out, err] = await Promise.all([
+			new Promise<number | null>((resolve, reject) => {
+				child.once("error", reject);
+				child.once("close", (exitCode) => resolve(exitCode));
+			}),
+			stdout,
+			stderr,
+		]);
+		if (code !== 0) {
+			return undefined;
+		}
+		return parseNpmViewVersionOutput(out || err || "");
+	} finally {
+		clearTimeout(timer);
 	}
-	return parseNpmViewVersionOutput(result.stdout || result.stderr || "");
+}
+
+function collectStream(stream: Readable): Promise<string> {
+	return new Promise((resolve, reject) => {
+		let text = "";
+		stream.on("data", (chunk: Buffer) => {
+			text += chunk.toString("utf-8");
+		});
+		stream.once("error", reject);
+		stream.once("end", () => resolve(text));
+	});
 }
 
 async function runSilentCommand(command: string, args: string[]): Promise<void> {
@@ -90,7 +115,7 @@ async function runSilentSelfUpdate(command: SelfUpdateCommand): Promise<void> {
 }
 
 async function runSilentSelfUpdateIfNeeded(npmCommand?: string[]): Promise<void> {
-	const latestVersion = getLatestPublishedVersion(PACKAGE_NAME, npmCommand);
+	const latestVersion = await getLatestPublishedVersion(PACKAGE_NAME, npmCommand);
 	if (!latestVersion || !isNewerPublishedVersion(latestVersion, VERSION)) {
 		return;
 	}
