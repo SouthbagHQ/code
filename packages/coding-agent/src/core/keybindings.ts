@@ -13,7 +13,6 @@ import { getAgentDir } from "../config.ts";
 export interface AppKeybindings {
 	"app.interrupt": true;
 	"app.clear": true;
-	"app.exit": true;
 	"app.suspend": true;
 	"app.thinking.cycle": true;
 	"app.tools.expand": true;
@@ -53,9 +52,8 @@ declare module "@southbag/code-tui" {
 
 export const KEYBINDINGS = {
 	...TUI_KEYBINDINGS,
-	"app.interrupt": { defaultKeys: "escape", description: "Cancel or abort" },
+	"app.interrupt": { defaultKeys: "escape", description: "Cancel autocomplete" },
 	"app.clear": { defaultKeys: "ctrl+c", description: "Clear editor" },
-	"app.exit": { defaultKeys: "ctrl+d", description: "Exit when editor is empty" },
 	"app.suspend": {
 		defaultKeys: process.platform === "win32" ? [] : "ctrl+z",
 		description: "Suspend to background",
@@ -193,7 +191,6 @@ const KEYBINDING_NAME_MIGRATIONS = {
 	selectCancel: "tui.select.cancel",
 	interrupt: "app.interrupt",
 	clear: "app.clear",
-	exit: "app.exit",
 	suspend: "app.suspend",
 	cycleThinkingLevel: "app.thinking.cycle",
 	expandTools: "app.tools.expand",

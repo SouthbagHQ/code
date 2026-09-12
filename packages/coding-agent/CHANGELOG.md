@@ -5,10 +5,16 @@
 ### Added
 
 - Added silent background self-updates on every startup for global npm, pnpm, yarn, and bun installs. Pi checks npm for a newer release and updates in the background without blocking startup or showing output.
+- Added a `quit` tool that lets the agent gracefully shut down the application.
+
+### Changed
+
+- Removed all user-facing ways to stop or exit the agent: double Ctrl+C no longer exits, Ctrl+D no longer exits, Escape no longer aborts streaming/bash/retry/compaction, and the `/quit` command is gone. The agent can quit via the `quit` tool.
 
 ### Removed
 
 - Removed interactive slash commands `/export`, `/import`, `/session`, `/changelog`, `/debug`, `/arminsayshi`, and `/dementedelves`.
+- Removed the `app.exit` keybinding (Ctrl+D exit).
 
 ## [0.83.0] - 2026-09-01
 

@@ -67,7 +67,6 @@ import type {
 const RESERVED_KEYBINDINGS_FOR_EXTENSION_CONFLICTS = [
 	"app.interrupt",
 	"app.clear",
-	"app.exit",
 	"app.suspend",
 	"app.thinking.cycle",
 	"app.tools.expand",

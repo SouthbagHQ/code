@@ -10,7 +10,6 @@ export class CustomEditor extends Editor {
 
 	// Special handlers that can be dynamically replaced
 	public onEscape?: () => void;
-	public onCtrlD?: () => void;
 	public onPasteImage?: () => void;
 	/** Handler for extension-registered shortcuts. Returns true if handled. */
 	public onExtensionShortcut?: (data: string) => boolean;
@@ -56,19 +55,9 @@ export class CustomEditor extends Editor {
 			return;
 		}
 
-		// Exit (Ctrl+D) - only when editor is empty
-		if (this.keybindings.matches(data, "app.exit")) {
-			if (this.getText().length === 0) {
-				const handler = this.onCtrlD ?? this.actionHandlers.get("app.exit");
-				if (handler) handler();
-				return;
-			}
-			// Fall through to editor handling for delete-char-forward when not empty
-		}
-
 		// Check all other app actions
 		for (const [action, handler] of this.actionHandlers) {
-			if (action !== "app.interrupt" && action !== "app.exit" && this.keybindings.matches(data, action)) {
+			if (action !== "app.interrupt" && this.keybindings.matches(data, action)) {
 				handler();
 				return;
 			}
