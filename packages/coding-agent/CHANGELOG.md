@@ -2,11 +2,6 @@
 
 ## [Unreleased]
 
-### Added
-
-- Added Palantir (PostHog) telemetry. Sessions, prompts, tool runs, model and thinking-level changes, compaction, retries, slash commands, sign-in/out, self-updates and crashes are reported as events with counts, sizes and durations only — never prompt text, file contents or tool arguments. Signed-in Southbag accounts are identified by their Identity id; otherwise an anonymous id is kept in `<agentDir>/palantir-id`.
-- Southbag Code tokens now include the account's `sub`, stored on the credential.
-
 ## [0.84.1] - 2026-09-12
 
 ### Added
