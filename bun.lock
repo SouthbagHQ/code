@@ -18,9 +18,9 @@
     },
     "packages/agent": {
       "name": "@southbag/code-core",
-      "version": "0.84.1",
+      "version": "0.84.2",
       "dependencies": {
-        "@southbag/code-ai": "^0.80.4",
+        "@southbag/code-ai": "^0.84.2",
         "ignore": "7.0.5",
         "typebox": "1.1.38",
         "yaml": "2.9.0",
@@ -32,7 +32,7 @@
     },
     "packages/ai": {
       "name": "@southbag/code-ai",
-      "version": "0.84.1",
+      "version": "0.84.2",
       "bin": {
         "southbag-code-ai": "./dist/cli.js",
       },
@@ -55,15 +55,15 @@
     },
     "packages/coding-agent": {
       "name": "@southbag/code",
-      "version": "0.84.1",
+      "version": "0.84.2",
       "bin": {
         "southbag-code": "dist/cli.js",
       },
       "dependencies": {
         "@silvia-odwyer/photon-node": "0.3.4",
-        "@southbag/code-ai": "^0.80.4",
-        "@southbag/code-core": "^0.80.4",
-        "@southbag/code-tui": "^0.80.4",
+        "@southbag/code-ai": "^0.84.2",
+        "@southbag/code-core": "^0.84.2",
+        "@southbag/code-tui": "^0.84.2",
         "chalk": "5.6.2",
         "cross-spawn": "7.0.6",
         "diff": "8.0.4",
@@ -96,7 +96,7 @@
     },
     "packages/tui": {
       "name": "@southbag/code-tui",
-      "version": "0.84.1",
+      "version": "0.84.2",
       "dependencies": {
         "get-east-asian-width": "1.6.0",
         "marked": "18.0.5",
@@ -108,7 +108,7 @@
     },
     "packages/website": {
       "name": "@southbag/code-website",
-      "version": "0.84.1",
+      "version": "0.84.2",
       "dependencies": {
         "jose": "6.2.8",
       },
@@ -381,8 +381,6 @@
     "@nodelib/fs.stat": ["@nodelib/fs.stat@2.0.5", "", {}, "sha512-RkhPPp2zrqDAQA/2jNhnztcPAlv64XdhIp7a7454A5ovI7Bukxgt7MX7udwAu3zg1DcpPU0rz3VV1SeaqvY4+A=="],
 
     "@nodelib/fs.walk": ["@nodelib/fs.walk@1.2.8", "", { "dependencies": { "@nodelib/fs.scandir": "2.1.5", "fastq": "^1.6.0" } }, "sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg=="],
-
-    "@opentelemetry/api": ["@opentelemetry/api@1.9.0", "", {}, "sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg=="],
 
     "@opentelemetry/semantic-conventions": ["@opentelemetry/semantic-conventions@1.43.0", "", {}, "sha512-eSYWTm620tTk45EKSedaUL8MFYI8hW164hIXsgIHyxu3VobUB3fFCu5t0hQby6OoWRPsG1KkKUG2M5UadiLiVg=="],
 
