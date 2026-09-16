@@ -45,10 +45,11 @@ const workflowRows = [
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Southbag Code</title>
+		<script is:inline src="/palantir.js" data-app="code" data-session-url="/api/session"></script>
 	</head>
 	<body>
 		<div class="shell">
-			<a class="account" href="/account">Account</a>
+			<a class="account" href="/account" data-palantir="code_account_link_clicked">Account</a>
 			<main>
 				<section class="hero">
 					<div class="hero-copy">
@@ -85,6 +86,20 @@ const workflowRows = [
 				</ContentSection>
 			</main>
 		</div>
+		<script>
+			document.addEventListener("click", (event) => {
+				const target = event.target instanceof Element ? event.target.closest("a, button") : null;
+				if (!target || !window.palantir) return;
+				const named = target.getAttribute("data-palantir");
+				if (named) {
+					window.palantir.capture(named, { href: target.getAttribute("href") ?? undefined });
+					return;
+				}
+				if (target instanceof HTMLAnchorElement && target.origin !== location.origin) {
+					window.palantir.capture("code_outbound_link_clicked", { href: target.href, text: target.textContent?.trim() });
+				}
+			});
+		</script>
 	</body>
 </html>
 

@@ -54,6 +54,7 @@ import { FooterDataProvider, type ReadonlyFooterDataProvider } from "../../core/
 import { configureHttpDispatcher } from "../../core/http-dispatcher.ts";
 import { type AppKeybinding, KeybindingsManager } from "../../core/keybindings.ts";
 import { createCompactionSummaryMessage } from "../../core/messages.ts";
+import { palantir } from "../../core/palantir.ts";
 import type { ResourceDiagnostic } from "../../core/resource-loader.ts";
 import { formatMissingSessionCwdPrompt, MissingSessionCwdError } from "../../core/session-cwd.ts";
 import { type SessionContext, SessionManager } from "../../core/session-manager.ts";
@@ -2314,6 +2315,22 @@ export class InteractiveMode {
 			text = text.trim();
 			if (!text) return;
 
+			if (text.startsWith("/")) {
+				const spaceIndex = text.indexOf(" ");
+				const command = spaceIndex === -1 ? text.slice(1) : text.slice(1, spaceIndex);
+				palantir.capture("cli_slash_command", {
+					command,
+					has_arguments: spaceIndex !== -1,
+					extension_command: this.isExtensionCommand(text),
+					streaming: this.session.isStreaming,
+				});
+			} else if (text.startsWith("!")) {
+				palantir.capture("cli_bash_command", {
+					excluded_from_context: text.startsWith("!!"),
+					characters: text.length,
+				});
+			}
+
 			// Handle commands
 			if (text === "/settings") {
 				this.showError("Kevin controls your settings");
@@ -2386,8 +2403,10 @@ export class InteractiveMode {
 			}
 			if (text === "/logout") {
 				this.editor.setText("");
+				palantir.capture("cli_logout");
 				this.session.modelRegistry.authStorage.remove("southbag-agent");
-				await this.shutdown();
+				palantir.refreshIdentity();
+				await this.shutdown({ reason: "logout" });
 				return;
 			}
 
@@ -3068,9 +3087,10 @@ export class InteractiveMode {
 	 */
 	private isShuttingDown = false;
 
-	private async shutdown(options?: { fromSignal?: boolean }): Promise<void> {
+	private async shutdown(options?: { fromSignal?: boolean; reason?: string }): Promise<void> {
 		if (this.isShuttingDown) return;
 		this.isShuttingDown = true;
+		const exitReported = palantir.exit(options?.reason ?? (options?.fromSignal ? "signal" : "quit"));
 		// Keep signal handlers registered until terminal cleanup has completed.
 		// `signal-exit` checks the listener list during the same SIGTERM/SIGHUP
 		// dispatch and re-sends the signal if only its own listeners remain.
@@ -3087,6 +3107,7 @@ export class InteractiveMode {
 			this.themeController.disableAutoSync();
 			await this.ui.terminal.drainInput(1000);
 			this.stop();
+			await exitReported;
 			process.exit(0);
 		}
 
@@ -3106,6 +3127,7 @@ export class InteractiveMode {
 			process.stdout.write(`${chalk.dim("To resume this session:")} ${resumeCommand}\n`);
 		}
 
+		await exitReported;
 		process.exit(0);
 	}
 
@@ -3129,7 +3151,7 @@ export class InteractiveMode {
 	 * call ui.stop() to restore cooked mode, the cursor, and disable bracketed
 	 * paste / Kitty / modifyOtherKeys sequences.
 	 */
-	private uncaughtCrash(error: Error): never {
+	private uncaughtCrash(error: Error): void {
 		if (this.isShuttingDown) {
 			process.exit(1);
 		}
@@ -3145,7 +3167,10 @@ export class InteractiveMode {
 		} catch {}
 		console.error("pi exiting due to uncaughtException:");
 		console.error(error);
-		process.exit(1);
+		palantir.error("uncaught_exception", error);
+		// Give the telemetry flush a bounded moment; exit regardless.
+		void palantir.exit("crash").finally(() => process.exit(1));
+		setTimeout(() => process.exit(1), 1500).unref();
 	}
 
 	/**

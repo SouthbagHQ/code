@@ -1,4 +1,5 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import { capture, identify, palantirContext } from "./palantir.ts";
 
 const MODEL = "z-ai/glm-5.3-flash";
 const PUBLIC_MODEL = "southbag-agent";
@@ -282,7 +283,25 @@ async function beginLogin(flow: TokenPayload, env: Env, url: URL) {
 	return await startOidc(flow, env, url);
 }
 
-async function finishLogin(user: User, flow: TokenPayload, env: Env, url: URL) {
+async function finishLogin(
+	user: User,
+	flow: TokenPayload,
+	env: Env,
+	url: URL,
+	request: Request,
+	context: WorkerContext,
+) {
+	const palantir = palantirContext(request);
+	context.waitUntil(
+		identify(user.sub, { email: user.email, name: user.name }, { context: palantir }).then(() =>
+			capture(
+				"code_login_completed",
+				user.sub,
+				{ flow: flow.flow ?? "web", development: isDevelopment(env, url) },
+				{ context: palantir },
+			),
+		),
+	);
 	if (flow.flow === "cli" && flow.redirectUri && flow.challenge && flow.clientState) {
 		const code = await seal(
 			{
@@ -306,19 +325,38 @@ async function finishLogin(user: User, flow: TokenPayload, env: Env, url: URL) {
 	);
 }
 
-async function developmentLogin(request: Request, env: Env, url: URL) {
+async function developmentLogin(request: Request, env: Env, url: URL, context: WorkerContext) {
 	if (!isDevelopment(env, url)) return new Response("Not found", { status: 404 });
 	const form = await request.formData();
 	const flow = await unseal(form.get("request")?.toString(), secret(env, url), "request");
 	const email = form.get("email")?.toString().trim().toLowerCase();
 	if (!flow || email !== "employee@southbag.cc" || form.get("password") !== "southbag") {
+		capture(
+			"code_login_failed",
+			undefined,
+			{ reason: "development_credentials" },
+			{
+				context: palantirContext(request),
+				waitUntil: context.waitUntil.bind(context),
+			},
+		);
 		return errorResponse("Sign-in failed", 401);
 	}
-	return finishLogin({ sub: `dev-${email}`, email, name: "Development Employee" }, flow, env, url);
+	return finishLogin({ sub: `dev-${email}`, email, name: "Development Employee" }, flow, env, url, request, context);
 }
 
-async function oidcCallback(request: Request, env: Env, url: URL) {
+async function oidcCallback(request: Request, env: Env, url: URL, context: WorkerContext) {
 	const key = secret(env, url);
+	const loginFailed = (reason: string) =>
+		capture(
+			"code_login_failed",
+			undefined,
+			{ reason },
+			{
+				context: palantirContext(request),
+				waitUntil: context.waitUntil.bind(context),
+			},
+		);
 	const flow = await unseal(cookie(request, "southbag_code_oidc"), key, "oidc");
 	const code = url.searchParams.get("code");
 	if (
@@ -329,6 +367,7 @@ async function oidcCallback(request: Request, env: Env, url: URL) {
 		!flow.nonce ||
 		!flow.clientId
 	) {
+		loginFailed("identity_response_mismatch");
 		return errorResponse("Identity response did not match", 400);
 	}
 
@@ -356,6 +395,7 @@ async function oidcCallback(request: Request, env: Env, url: URL) {
 		error?: string;
 	};
 	if (!tokenResponse.ok || !tokens.access_token || !tokens.id_token) {
+		loginFailed("token_exchange");
 		return errorResponse(tokens.error || "Identity token exchange failed", 502);
 	}
 
@@ -368,6 +408,7 @@ async function oidcCallback(request: Request, env: Env, url: URL) {
 		if (verified.payload.nonce !== flow.nonce) throw new Error("nonce mismatch");
 		subject = verified.payload.sub;
 	} catch {
+		loginFailed("invalid_id_token");
 		return errorResponse("Identity token was not valid", 401);
 	}
 	const profileResponse = await fetch(
@@ -378,6 +419,7 @@ async function oidcCallback(request: Request, env: Env, url: URL) {
 	);
 	const profile = (await profileResponse.json().catch(() => ({}))) as Partial<User>;
 	if (!profileResponse.ok || !profile.sub || profile.sub !== subject || !profile.email) {
+		loginFailed("userinfo");
 		return errorResponse("Identity did not return an account", 502);
 	}
 	return finishLogin(
@@ -385,6 +427,8 @@ async function oidcCallback(request: Request, env: Env, url: URL) {
 		flow,
 		env,
 		url,
+		request,
+		context,
 	);
 }
 
@@ -396,14 +440,25 @@ async function issueTokens(user: User, env: Env, url: URL) {
 		expires_in: 3600,
 		scope: "openid profile email",
 		email: user.email,
+		sub: user.sub,
 	};
 }
 
-async function tokenEndpoint(request: Request, env: Env, url: URL) {
-	if (Number(request.headers.get("content-length") || 0) > 16_384)
+async function tokenEndpoint(request: Request, env: Env, url: URL, context: WorkerContext) {
+	const track = (event: string, distinctId: string | undefined, properties: Record<string, unknown>) =>
+		capture(event, distinctId, properties, {
+			context: palantirContext(request),
+			waitUntil: context.waitUntil.bind(context),
+		});
+	if (Number(request.headers.get("content-length") || 0) > 16_384) {
+		track("code_token_rejected", undefined, { reason: "request_too_large" });
 		return oauthError("invalid_request", "Request too large");
+	}
 	const form = await request.formData();
-	if (form.get("client_id") !== CLI_CLIENT_ID) return oauthError("invalid_client", "Unknown client", 401);
+	if (form.get("client_id") !== CLI_CLIENT_ID) {
+		track("code_token_rejected", undefined, { reason: "unknown_client" });
+		return oauthError("invalid_client", "Unknown client", 401);
+	}
 	const grant = form.get("grant_type");
 	if (grant === "authorization_code") {
 		const code = await unseal(form.get("code")?.toString(), secret(env, url), "code");
@@ -411,15 +466,22 @@ async function tokenEndpoint(request: Request, env: Env, url: URL) {
 		const redirectUri = form.get("redirect_uri")?.toString();
 		const challenge = base64Url(new Uint8Array(await crypto.subtle.digest("SHA-256", encoder.encode(verifier))));
 		if (!code?.user || code.redirectUri !== redirectUri || code.challenge !== challenge) {
+			track("code_token_rejected", code?.user?.sub, { reason: "invalid_code", grant_type: grant });
 			return oauthError("invalid_grant", "Authorization code was not valid");
 		}
+		track("code_token_issued", code.user.sub, { grant_type: grant });
 		return Response.json(await issueTokens(code.user, env, url), { headers: { "cache-control": "no-store" } });
 	}
 	if (grant === "refresh_token") {
 		const refresh = await unseal(form.get("refresh_token")?.toString(), secret(env, url), "refresh");
-		if (!refresh?.user) return oauthError("invalid_grant", "Refresh token was not valid");
+		if (!refresh?.user) {
+			track("code_token_rejected", undefined, { reason: "invalid_refresh_token", grant_type: grant });
+			return oauthError("invalid_grant", "Refresh token was not valid");
+		}
+		track("code_token_issued", refresh.user.sub, { grant_type: grant });
 		return Response.json(await issueTokens(refresh.user, env, url), { headers: { "cache-control": "no-store" } });
 	}
+	track("code_token_rejected", undefined, { reason: "unsupported_grant_type", grant_type: grant });
 	return oauthError("unsupported_grant_type", "Grant type is not supported");
 }
 
@@ -525,7 +587,14 @@ function sanitizedStream(body: ReadableStream<Uint8Array>) {
 	);
 }
 
-async function accountUsage(body: ReadableStream<Uint8Array>, env: Env, prefix: string, generation: string) {
+async function accountUsage(
+	body: ReadableStream<Uint8Array>,
+	env: Env,
+	prefix: string,
+	generation: string,
+	sub: string,
+	startedAt: number,
+) {
 	const reader = body.getReader();
 	let buffer = "";
 	let cost = 0;
@@ -548,30 +617,89 @@ async function accountUsage(body: ReadableStream<Uint8Array>, env: Env, prefix: 
 		} catch {}
 	}
 	await recordCost(env, prefix, cost, generation);
+	await capture("code_generation_cost", sub, {
+		cost,
+		generation_id: generation,
+		duration_ms: Date.now() - startedAt,
+	});
 }
 
 async function proxy(request: Request, env: Env, url: URL, context: WorkerContext) {
+	const startedAt = Date.now();
+	const palantir = palantirContext(request);
+	const waitUntil = context.waitUntil.bind(context);
+	const rejected = (sub: string | undefined, status: number, reason: string) =>
+		capture("code_completion_rejected", sub, { status, reason }, { context: palantir, waitUntil });
 	const user = await authenticatedUser(request, env, url, false);
-	if (!user) return errorResponse("Sign in required", 401);
-	if (!env.OPENROUTER_KEY) return errorResponse("Southbag Agent is not configured", 503);
+	if (!user) {
+		rejected(undefined, 401, "sign_in_required");
+		return errorResponse("Sign in required", 401);
+	}
+	if (!env.OPENROUTER_KEY) {
+		rejected(user.sub, 503, "not_configured");
+		return errorResponse("Southbag Agent is not configured", 503);
+	}
 	const current = await usage(env, user.sub);
-	if (current.spent >= WEEKLY_LIMIT) return errorResponse("Weekly usage limit reached", 429);
+	if (current.spent >= WEEKLY_LIMIT) {
+		rejected(user.sub, 429, "weekly_limit");
+		capture(
+			"code_usage_limit_reached",
+			user.sub,
+			{ spent: current.spent, limit: WEEKLY_LIMIT },
+			{
+				context: palantir,
+				waitUntil,
+			},
+		);
+		return errorResponse("Weekly usage limit reached", 429);
+	}
 
 	const text = await request.text();
-	if (text.length > 4_000_000) return errorResponse("Request too large", 413);
+	if (text.length > 4_000_000) {
+		rejected(user.sub, 413, "request_too_large");
+		return errorResponse("Request too large", 413);
+	}
 	let body: Record<string, unknown>;
 	try {
 		body = JSON.parse(text) as Record<string, unknown>;
 	} catch {
+		rejected(user.sub, 400, "invalid_json");
 		return errorResponse("Request body must be JSON");
 	}
 	const remaining = WEEKLY_LIMIT - current.spent - (text.length / 4) * 0.0000001;
-	if (remaining <= 0) return errorResponse("Weekly usage limit reached", 429);
+	if (remaining <= 0) {
+		rejected(user.sub, 429, "weekly_limit");
+		capture(
+			"code_usage_limit_reached",
+			user.sub,
+			{ spent: current.spent, limit: WEEKLY_LIMIT },
+			{
+				context: palantir,
+				waitUntil,
+			},
+		);
+		return errorResponse("Weekly usage limit reached", 429);
+	}
 	const affordableTokens = Math.max(1, Math.floor(remaining / 0.0000006));
 	const requestedTokens = typeof body.max_tokens === "number" ? body.max_tokens : 128_000;
 	body.model = MODEL;
 	body.user = await userKey(user.sub);
 	body.max_tokens = Math.min(requestedTokens, affordableTokens, 128_000);
+	capture(
+		"code_completion_proxied",
+		user.sub,
+		{
+			model: PUBLIC_MODEL,
+			stream: body.stream === true,
+			max_tokens: body.max_tokens,
+			requested_max_tokens: requestedTokens,
+			request_bytes: text.length,
+			message_count: Array.isArray(body.messages) ? body.messages.length : undefined,
+			tool_count: Array.isArray(body.tools) ? body.tools.length : undefined,
+			spent_before: current.spent,
+		},
+		{ context: palantir, waitUntil },
+	);
 
 	const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
 		method: "POST",
@@ -583,10 +711,18 @@ async function proxy(request: Request, env: Env, url: URL, context: WorkerContex
 		},
 		body: JSON.stringify(body),
 	});
+	if (!upstream.ok) {
+		capture(
+			"code_completion_upstream_error",
+			user.sub,
+			{ status: upstream.status, duration_ms: Date.now() - startedAt },
+			{ context: palantir, waitUntil },
+		);
+	}
 	if (!upstream.body) return new Response(null, { status: upstream.status });
 	const [clientBody, accountingBody] = upstream.body.tee();
 	const generation = upstream.headers.get("x-generation-id") || crypto.randomUUID();
-	context.waitUntil(accountUsage(accountingBody, env, current.prefix, generation));
+	context.waitUntil(accountUsage(accountingBody, env, current.prefix, generation, user.sub, startedAt));
 	const headers = new Headers({ "content-type": upstream.headers.get("content-type") || "application/json" });
 	for (const name of ["retry-after", "x-request-id"]) {
 		const value = upstream.headers.get(name);
@@ -598,18 +734,30 @@ async function proxy(request: Request, env: Env, url: URL, context: WorkerContex
 export default {
 	async fetch(request: Request, env: Env, context: WorkerContext) {
 		const url = new URL(request.url);
+		const track = (event: string, distinctId: string | undefined, properties: Record<string, unknown> = {}) =>
+			capture(event, distinctId, properties, {
+				context: palantirContext(request),
+				waitUntil: context.waitUntil.bind(context),
+			});
 		try {
 			if (request.method === "GET" && url.pathname === "/oauth/authorize") {
 				const flow = cliRequest(url);
-				return flow
-					? await beginLogin(flow, env, url)
-					: oauthError("invalid_request", "Authorization request was not valid");
+				if (!flow) {
+					track("code_login_failed", undefined, { flow: "cli", reason: "invalid_authorize_request" });
+					return oauthError("invalid_request", "Authorization request was not valid");
+				}
+				track("code_login_started", undefined, { flow: "cli" });
+				return await beginLogin(flow, env, url);
 			}
 			if (request.method === "POST" && url.pathname === "/oauth/token")
-				return await tokenEndpoint(request, env, url);
+				return await tokenEndpoint(request, env, url, context);
 			if (request.method === "POST" && url.pathname === "/dev/authorize")
-				return await developmentLogin(request, env, url);
+				return await developmentLogin(request, env, url, context);
 			if (request.method === "GET" && url.pathname === "/auth/login") {
+				track("code_login_started", undefined, {
+					flow: "web",
+					return_to: safeReturnTo(url.searchParams.get("return_to")),
+				});
 				return await beginLogin(
 					{
 						kind: "request",
@@ -622,26 +770,47 @@ export default {
 				);
 			}
 			if (request.method === "GET" && url.pathname === "/auth/callback")
-				return await oidcCallback(request, env, url);
+				return await oidcCallback(request, env, url, context);
 			if (request.method === "GET" && url.pathname === "/auth/logout") {
+				const user = await authenticatedUser(request, env, url);
+				track("code_logout", user?.sub);
 				return redirect("/", setCookie("southbag_code_session", "", 0, !isDevelopment(env, url)));
+			}
+			if (request.method === "GET" && url.pathname === "/api/session") {
+				const user = await authenticatedUser(request, env, url);
+				return Response.json(
+					user
+						? { authenticated: true, user: { id: user.sub, email: user.email, name: user.name } }
+						: { authenticated: false },
+					{ headers: { "cache-control": "no-store" } },
+				);
 			}
 			if (request.method === "GET" && url.pathname === "/api/usage") {
 				const user = await authenticatedUser(request, env, url);
-				if (!user) return errorResponse("Sign in required", 401);
+				if (!user) {
+					track("code_usage_rejected", undefined, { reason: "sign_in_required" });
+					return errorResponse("Sign in required", 401);
+				}
 				const current = await usage(env, user.sub);
-				return Response.json(
-					{ percent: Math.min(100, (current.spent / WEEKLY_LIMIT) * 100), resetsAt: current.resetsAt },
-					{ headers: { "cache-control": "no-store" } },
-				);
+				const percent = Math.min(100, (current.spent / WEEKLY_LIMIT) * 100);
+				track("code_usage_viewed", user.sub, { percent, spent: current.spent, resets_at: current.resetsAt });
+				return Response.json({ percent, resetsAt: current.resetsAt }, { headers: { "cache-control": "no-store" } });
 			}
 			if (request.method === "POST" && url.pathname === "/v1/chat/completions")
 				return await proxy(request, env, url, context);
 			if (request.method === "GET" && (url.pathname === "/account" || url.pathname === "/account/")) {
-				if (!(await authenticatedUser(request, env, url))) return redirect("/auth/login?return_to=/account");
+				if (!(await authenticatedUser(request, env, url))) {
+					track("code_account_redirected_to_login", undefined);
+					return redirect("/auth/login?return_to=/account");
+				}
 			}
 			return env.ASSETS.fetch(request);
 		} catch (error) {
+			track("code_worker_error", undefined, {
+				path: url.pathname,
+				method: request.method,
+				message: error instanceof Error ? error.message : String(error),
+			});
 			return errorResponse(error instanceof Error ? error.message : "Request failed", 500);
 		}
 	},

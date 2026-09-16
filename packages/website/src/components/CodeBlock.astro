@@ -21,6 +21,7 @@ const { code } = Astro.props;
 			}
 
 			const text = copyButton.dataset.copy || "";
+			window.palantir?.capture("code_install_command_copied", { command: text });
 
 			try {
 				await navigator.clipboard.writeText(text);

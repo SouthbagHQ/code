@@ -10,12 +10,14 @@ import type { OAuthCredentials, OAuthLoginCallbacks, OAuthProviderInterface } fr
 const DEFAULT_ORIGIN = "https://code.southbag.cc";
 const CLIENT_ID = "southbag-code-cli";
 
-type SouthbagCredentials = OAuthCredentials & { origin?: string };
+type SouthbagCredentials = OAuthCredentials & { origin?: string; email?: string; sub?: string };
 type TokenResponse = {
 	access_token?: string;
 	refresh_token?: string;
 	expires_in?: number;
 	email?: string;
+	/** Identity user id — the same id every Southbag app identifies the person with. */
+	sub?: string;
 	error?: string;
 	error_description?: string;
 };
@@ -45,6 +47,7 @@ async function tokenRequest(origin: string, body: URLSearchParams): Promise<Sout
 		expires: Date.now() + data.expires_in * 1000 - 60_000,
 		origin,
 		email: data.email,
+		sub: data.sub,
 	};
 }
 

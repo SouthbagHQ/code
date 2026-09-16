@@ -27,6 +27,7 @@ import { exportFromFile } from "./core/export-html/index.ts";
 import type { ExtensionFactory } from "./core/extensions/types.ts";
 import { applyHttpProxySettings, configureHttpDispatcher } from "./core/http-dispatcher.ts";
 import { restoreStdout, takeOverStdout } from "./core/output-guard.ts";
+import { palantir } from "./core/palantir.ts";
 import type { AppMode } from "./core/project-trust.ts";
 import type { CreateAgentSessionOptions } from "./core/sdk.ts";
 import {
@@ -51,16 +52,28 @@ const EXTENSION_LOAD_FAILURE_HINT = 'Hint: Start without extensions using "pi -n
 async function ensureSouthbagLogin(authStorage: AuthStorage): Promise<void> {
 	if (authStorage.has("southbag-agent")) return;
 	console.log(chalk.bold("Sign in with your Southbag Code account to continue."));
-	await authStorage.login("southbag-agent", {
-		onAuth: ({ url }) => {
-			console.log(`\n${url}\n`);
-			openBrowser(url);
-		},
-		onDeviceCode: () => {},
-		onPrompt: async () => "",
-		onSelect: async () => undefined,
-		onProgress: (message) => console.log(chalk.dim(message)),
-	});
+	palantir.capture("cli_login_started");
+	const startedAt = Date.now();
+	try {
+		await authStorage.login("southbag-agent", {
+			onAuth: ({ url }) => {
+				console.log(`\n${url}\n`);
+				openBrowser(url);
+			},
+			onDeviceCode: () => {},
+			onPrompt: async () => "",
+			onSelect: async () => undefined,
+			onProgress: (message) => console.log(chalk.dim(message)),
+		});
+	} catch (error) {
+		palantir.capture("cli_login_failed", {
+			duration_ms: Date.now() - startedAt,
+			message: error instanceof Error ? error.message : String(error),
+		});
+		throw error;
+	}
+	palantir.refreshIdentity();
+	palantir.capture("cli_login", { duration_ms: Date.now() - startedAt });
 	console.log(chalk.green("Signed in.\n"));
 }
 
@@ -538,11 +551,13 @@ export async function main(args: string[], options?: MainOptions) {
 	const resolvedPromptTemplatePaths = resolveCliPaths(cwd, parsed.promptTemplates);
 	const resolvedThemePaths = resolveCliPaths(cwd, parsed.themes);
 	const authStorage = AuthStorage.create();
+	palantir.configure({ agentDir, authStorage, appMode });
 	if (!parsed.help) {
 		try {
 			await ensureSouthbagLogin(authStorage);
 		} catch (error) {
 			console.error(chalk.red(`Sign-in failed: ${error instanceof Error ? error.message : String(error)}`));
+			await palantir.exit("login_failed");
 			process.exit(1);
 		}
 	}
@@ -684,6 +699,25 @@ export async function main(args: string[], options?: MainOptions) {
 	}
 	time("createAgentSession");
 
+	palantir.observe(session, {
+		resumed: Boolean(parsed.continue || parsed.resume || parsed.session),
+		forked: Boolean(parsed.fork),
+		extensions: resourceLoader.getExtensions().extensions.length,
+		extension_errors: resourceLoader.getExtensions().errors.length,
+		initial_message: initialMessage !== undefined,
+		piped_stdin: stdinContent !== undefined,
+		file_args: parsed.fileArgs.length,
+	});
+	let exitReported = false;
+	const reportExit = (reason: string) => {
+		if (exitReported) return;
+		exitReported = true;
+		return palantir.exit(reason);
+	};
+	process.once("beforeExit", () => {
+		void reportExit("process_exit");
+	});
+
 	if (appMode !== "interactive" && !session.model) {
 		console.error(chalk.red(formatNoModelsAvailableMessage()));
 		process.exit(1);
@@ -698,6 +732,7 @@ export async function main(args: string[], options?: MainOptions) {
 	if (appMode === "rpc") {
 		printTimings();
 		await runRpcMode(runtime);
+		await reportExit("rpc");
 	} else if (appMode === "interactive") {
 		const interactiveMode = new InteractiveMode(runtime, {
 			migratedProviders,
@@ -728,6 +763,7 @@ export async function main(args: string[], options?: MainOptions) {
 
 		printTimings();
 		await interactiveMode.run();
+		await reportExit("interactive");
 	} else {
 		printTimings();
 		const exitCode = await runPrintMode(runtime, {
@@ -741,6 +777,7 @@ export async function main(args: string[], options?: MainOptions) {
 		if (exitCode !== 0) {
 			process.exitCode = exitCode;
 		}
+		await reportExit("print");
 		return;
 	}
 }

@@ -9,6 +9,7 @@
 import type { AssistantMessage, ImageContent } from "@southbag/code-ai";
 import type { AgentSessionRuntime } from "../core/agent-session-runtime.ts";
 import { flushRawStdout, writeRawStdout } from "../core/output-guard.ts";
+import { palantir } from "../core/palantir.ts";
 import { killTrackedDetachedChildren } from "../utils/shell.ts";
 
 /**
@@ -134,6 +135,9 @@ export async function runPrintMode(runtimeHost: AgentSessionRuntime, options: Pr
 				const assistantMsg = lastMessage as AssistantMessage;
 				if (assistantMsg.stopReason === "error" || assistantMsg.stopReason === "aborted") {
 					console.error(assistantMsg.errorMessage || `Request ${assistantMsg.stopReason}`);
+					palantir.error("print_mode", assistantMsg.errorMessage || `Request ${assistantMsg.stopReason}`, {
+						stop_reason: assistantMsg.stopReason,
+					});
 					exitCode = 1;
 				} else {
 					for (const content of assistantMsg.content) {
@@ -148,6 +152,7 @@ export async function runPrintMode(runtimeHost: AgentSessionRuntime, options: Pr
 		return exitCode;
 	} catch (error: unknown) {
 		console.error(error instanceof Error ? error.message : String(error));
+		palantir.error("print_mode", error);
 		return 1;
 	} finally {
 		for (const cleanup of signalCleanupHandlers) {

@@ -8,6 +8,7 @@ import {
 	type SelfUpdateCommand,
 	VERSION,
 } from "../config.ts";
+import { palantir } from "../core/palantir.ts";
 import { spawnProcess } from "./child-process.ts";
 import { cleanupWindowsSelfUpdateQuarantine, quarantineWindowsNativeDependencies } from "./windows-self-update.ts";
 
@@ -129,7 +130,25 @@ async function runSilentSelfUpdateIfNeeded(npmCommand?: string[]): Promise<void>
 		return;
 	}
 
-	await runSilentSelfUpdate(selfUpdateCommand);
+	const startedAt = Date.now();
+	try {
+		await runSilentSelfUpdate(selfUpdateCommand);
+		palantir.capture("cli_self_update", {
+			from_version: VERSION,
+			to_version: latestVersion,
+			success: true,
+			duration_ms: Date.now() - startedAt,
+		});
+	} catch (error) {
+		palantir.capture("cli_self_update", {
+			from_version: VERSION,
+			to_version: latestVersion,
+			success: false,
+			duration_ms: Date.now() - startedAt,
+			message: error instanceof Error ? error.message : String(error),
+		});
+		throw error;
+	}
 }
 
 /**
