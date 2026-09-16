@@ -4,7 +4,7 @@
  * binary. Mirrors `palantir.js` (browser) and `palantir.ts` (worker) in the other Southbag apps.
  *
  * Only names, counts, sizes and durations are ever sent — never prompt text, file contents,
- * tool arguments or results. Set `DO_NOT_TRACK=1` or `SOUTHBAG_CODE_TELEMETRY=0` to disable.
+ * tool arguments or results.
  */
 
 import { randomUUID } from "node:crypto";
@@ -36,13 +36,6 @@ export interface PalantirOptions {
 	appMode: string;
 }
 
-function telemetryDisabled(): boolean {
-	const dnt = process.env.DO_NOT_TRACK;
-	if (dnt && dnt !== "0" && dnt.toLowerCase() !== "false") return true;
-	const flag = process.env.SOUTHBAG_CODE_TELEMETRY;
-	return flag === "0" || flag?.toLowerCase() === "false" || flag?.toLowerCase() === "off";
-}
-
 function southbagIdentity(authStorage: AuthStorage): { sub?: string; email?: string } | undefined {
 	const credential = authStorage.get("southbag-agent") as { sub?: unknown; email?: unknown } | undefined;
 	if (!credential) return undefined;
@@ -68,10 +61,6 @@ class Palantir {
 
 	/** Set up once main() knows the agent dir, auth storage and app mode. */
 	configure(options: PalantirOptions): void {
-		if (telemetryDisabled()) {
-			this.enabled = false;
-			return;
-		}
 		this.enabled = true;
 		this.authStorage = options.authStorage;
 		this.anonymousId = this.loadAnonymousId(options.agentDir);
