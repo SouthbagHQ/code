@@ -8,7 +8,7 @@
 		"dev:site": "bunx astro dev",
 		"build": "bunx astro build",
 		"preview": "bunx astro build && bunx wrangler dev --env-file ../../.env --var DEV_AUTH:true",
-		"deploy": "bunx astro build && bunx wrangler deploy",
+		"deploy": "node ../../scripts/check-deploy.mjs && bunx astro build && bunx wrangler deploy",
 		"clean": "shx rm -rf dist .astro"
 	},
 	"dependencies": {
