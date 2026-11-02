@@ -53,6 +53,7 @@ interface Env {
 	USAGE: Kv;
 	ORIGIN?: string;
 	IDENTITY_ORIGIN?: string;
+	IDENTITY_INTERNAL_SECRET?: string;
 	SESSION_SECRET?: string;
 	OPENROUTER_KEY?: string;
 	DEV_AUTH?: string;
@@ -522,6 +523,43 @@ async function authenticatedUser(request: Request, env: Env, url: URL, allowCook
 	return session?.user || null;
 }
 
+// The account-level freeze lives in Southbag Identity; Code only enforces the central answer,
+// checked FRESH on every request (no cache: a cached 'active' answer is an authorization window
+// a just-frozen user could keep using).
+// Availability policy: secret NOT CONFIGURED -> 'off' (development only; production deploys run
+// scripts/check-deploy.mjs first). Configured but Identity UNREACHABLE (or rejecting our
+// secret) -> 'unknown': EVERYTHING private fails closed, reads included - completions spend
+// money and usage history is private account data. KNOWN frozen blocks the account entirely.
+type CentralAnswer = "off" | "unknown" | { frozen: boolean };
+
+async function centralStatus(env: Env, userId: string): Promise<CentralAnswer> {
+	const secret = env.IDENTITY_INTERNAL_SECRET;
+	if (!secret) return "off";
+	try {
+		const origin = env.IDENTITY_ORIGIN || "https://identity.southbag.cc";
+		const response = await fetch(`${origin}/api/internal/freeze?userId=${encodeURIComponent(userId)}`, {
+			headers: { authorization: `Bearer ${secret}` },
+		});
+		if (response.status === 401 || response.status === 403) {
+			// Loud and distinct: the secret is wrong or rotated, which a presence-only deploy
+			// guard cannot catch. Still fails closed, but this is the log line to page on.
+			console.error(
+				`identity status REJECTED the configured secret (HTTP ${response.status}) - check IDENTITY_INTERNAL_SECRET`,
+			);
+			return "unknown";
+		}
+		if (!response.ok) throw new Error(`identity status ${response.status}`);
+		return { frozen: !!((await response.json()) as { frozen?: boolean }).frozen };
+	} catch (error) {
+		console.error("identity status failed", error);
+		return "unknown";
+	}
+}
+
+const FROZEN_TEXT = "Your account is frozen pending review. Unfreeze at https://identity.southbag.cc/unfreeze";
+const STATUS_UNKNOWN_TEXT =
+	"Southbag Identity is unavailable, so your account status cannot be checked. Try again shortly.";
+
 async function recordCost(env: Env, prefix: string, cost: number, generation: string) {
 	if (!(cost > 0) || !Number.isFinite(cost)) return;
 	await env.USAGE.put(`${prefix}${generation}`, "", { expirationTtl: 14 * 24 * 60 * 60, metadata: { cost } });
@@ -634,6 +672,15 @@ async function proxy(request: Request, env: Env, url: URL, context: WorkerContex
 	if (!user) {
 		rejected(undefined, 401, "sign_in_required");
 		return errorResponse("Sign in required", 401);
+	}
+	const central = await centralStatus(env, user.sub);
+	if (central === "unknown") {
+		rejected(user.sub, 503, "identity_unavailable");
+		return errorResponse(STATUS_UNKNOWN_TEXT, 503);
+	}
+	if (central !== "off" && central.frozen) {
+		rejected(user.sub, 423, "account_frozen");
+		return errorResponse(FROZEN_TEXT, 423);
 	}
 	if (!env.OPENROUTER_KEY) {
 		rejected(user.sub, 503, "not_configured");
@@ -791,6 +838,9 @@ export default {
 					track("code_usage_rejected", undefined, { reason: "sign_in_required" });
 					return errorResponse("Sign in required", 401);
 				}
+				const central = await centralStatus(env, user.sub);
+				if (central === "unknown") return errorResponse(STATUS_UNKNOWN_TEXT, 503);
+				if (central !== "off" && central.frozen) return errorResponse(FROZEN_TEXT, 423);
 				const current = await usage(env, user.sub);
 				const percent = Math.min(100, (current.spent / WEEKLY_LIMIT) * 100);
 				track("code_usage_viewed", user.sub, { percent, spent: current.spent, resets_at: current.resetsAt });
@@ -799,10 +849,14 @@ export default {
 			if (request.method === "POST" && url.pathname === "/v1/chat/completions")
 				return await proxy(request, env, url, context);
 			if (request.method === "GET" && (url.pathname === "/account" || url.pathname === "/account/")) {
-				if (!(await authenticatedUser(request, env, url))) {
+				const accountUser = await authenticatedUser(request, env, url);
+				if (!accountUser) {
 					track("code_account_redirected_to_login", undefined);
 					return redirect("/auth/login?return_to=/account");
 				}
+				const central = await centralStatus(env, accountUser.sub);
+				if (central === "unknown") return errorResponse(STATUS_UNKNOWN_TEXT, 503);
+				if (central !== "off" && central.frozen) return errorResponse(FROZEN_TEXT, 423);
 			}
 			return env.ASSETS.fetch(request);
 		} catch (error) {
