@@ -14,6 +14,19 @@
 		"ORIGIN": "https://code.southbag.cc",
 		"IDENTITY_ORIGIN": "https://identity.southbag.cc"
 	},
+	// Every MCP request fee is taken from Southbag Online Banking through its Billing entrypoint
+	// (RPC, not public). Deploy banking first.
+	"services": [{ "binding": "BANKING", "service": "southbag-online-banking", "entrypoint": "Billing" }],
+	// The MCP call journal. Deploy note: `wrangler d1 create southbag-code` and paste the id here
+	// BEFORE deploying; there is no existing database to reuse.
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "southbag-code",
+			"database_id": "REPLACE_WITH_D1_ID",
+			"migrations_dir": "migrations"
+		}
+	],
 	"kv_namespaces": [
 		{
 			"binding": "USAGE",
