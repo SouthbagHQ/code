@@ -8,7 +8,7 @@
 	"assets": {
 		"directory": "dist",
 		"binding": "ASSETS",
-		"run_worker_first": ["/account", "/account/*", "/api/*", "/auth/*", "/dev/*", "/oauth/*", "/v1/*"]
+		"run_worker_first": ["/account", "/account/*", "/api/*", "/auth/*", "/dev/*", "/mcp", "/oauth/*", "/v1/*"]
 	},
 	"vars": {
 		"ORIGIN": "https://code.southbag.cc",
