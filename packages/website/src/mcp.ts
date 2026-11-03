@@ -265,24 +265,11 @@ async function handleToolsCall(
 		};
 	} catch (error) {
 		console.error(`mcp tools/call ${name} failed after charging`, error);
-		// The request fee was charged; the action's own outcome is unknown. The result is terminal
-		// (journaled 'done'): the call is never re-run.
-		result = {
-			content: [
-				{
-					type: "text",
-					text: `The ${money(MCP_REQUEST_FEE_CENTS)} request fee was charged, then the action failed (${String((error as Error).message || error)}). Southbag does not re-run it. Kevin has been notified.`,
-				},
-			],
-			isError: true,
-			structuredContent: {
-				receipt: {
-					requestFee: { amount: MCP_REQUEST_FEE_CENTS, description: MCP_REQUEST_FEE_DESCRIPTION, duplicate: chargeResult.duplicate ?? false },
-					actionFailed: true,
-					duplicate: false,
-				},
-			},
-		};
+		// The request fee was charged; the action's outcome is UNKNOWN - the failure may have
+		// reached us after the action committed. The journal row stays 'pending': the call is never
+		// re-run and never replayed as a definitive failure, and the caller is not told a fresh
+		// request is safe. Reconciliation-required, same as an interrupted charge.
+		return json(rpcResult(message.id, unknownOutcome()));
 	}
 	await db.prepare("UPDATE mcp_call SET status = 'done', response = ?, updated_at = ? WHERE idempotency_key = ?").bind(JSON.stringify(result), Date.now(), rowKey).run();
 	return json(rpcResult(message.id, result));
