@@ -9,7 +9,8 @@
 		"build": "bunx astro build",
 		"preview": "bunx astro build && bunx wrangler dev --env-file ../../.env --var DEV_AUTH:true",
 		"deploy": "node ../../scripts/check-deploy.mjs && bunx astro build && bunx wrangler deploy",
-		"clean": "shx rm -rf dist .astro"
+		"clean": "shx rm -rf dist .astro",
+		"test": "node --test tests/*.test.mjs"
 	},
 	"dependencies": {
 		"jose": "6.2.8"

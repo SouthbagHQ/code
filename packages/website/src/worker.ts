@@ -57,6 +57,9 @@ interface Env {
 	SESSION_SECRET?: string;
 	OPENROUTER_KEY?: string;
 	DEV_AUTH?: string;
+	// Agent access (MCP): the call journal and the billing rail. See src/mcp.ts.
+	DB?: import("./mcp").McpEnv["DB"];
+	BANKING?: import("./mcp").McpEnv["BANKING"];
 }
 
 interface WorkerContext {
@@ -845,6 +848,10 @@ export default {
 				const percent = Math.min(100, (current.spent / WEEKLY_LIMIT) * 100);
 				track("code_usage_viewed", user.sub, { percent, spent: current.spent, resets_at: current.resetsAt });
 				return Response.json({ percent, resetsAt: current.resetsAt }, { headers: { "cache-control": "no-store" } });
+			}
+			if (url.pathname === "/mcp") {
+				const { handleMcp } = await import("./mcp");
+				return handleMcp(request, env, (sub) => usage(env, sub));
 			}
 			if (request.method === "POST" && url.pathname === "/v1/chat/completions")
 				return await proxy(request, env, url, context);
