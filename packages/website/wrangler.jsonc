@@ -23,7 +23,7 @@
 		{
 			"binding": "DB",
 			"database_name": "southbag-code",
-			"database_id": "REPLACE_WITH_D1_ID",
+			"database_id": "50727fd1-59f1-42af-a444-454132582649",
 			"migrations_dir": "migrations"
 		}
 	],
